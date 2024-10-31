@@ -31,7 +31,6 @@ export default function SignInForm() {
 
   function onSubmit(data: z.infer<typeof CredentialsSchema>) {
     startTransition(() => {
-      console.log(data);
       verifyCredentials(data);
     });
   }

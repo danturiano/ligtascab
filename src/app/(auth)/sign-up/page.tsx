@@ -2,8 +2,15 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import GoogleButton from "../_components/GoogleButton";
 import SignUpForm from "../_components/SignUpForm";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function SignUpPage() {
+  const session = await auth();
+  const user = session?.user;
+
+  if (user) redirect("/dashboard");
+
   return (
     <div className="container md:flex items-center justify-center flex-col">
       <div className="flex flex-col rounded-md items-start gap-4 md:gap-6 bg-white">

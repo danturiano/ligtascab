@@ -5,7 +5,7 @@ import { CredentialsSchema } from "./types";
 import { redirect } from "next/navigation";
 
 export async function signInWithGoogle() {
-  await signIn("google");
+  await signIn("google", { redirectTo: "/dashboard" });
 }
 
 export async function signInWithCredentials(User: unknown) {

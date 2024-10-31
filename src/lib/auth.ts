@@ -53,9 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     authorized: async ({ auth }) => {
       return !!auth;
     },
-    async signIn(params: { user: User }): Promise<boolean> {
-      const { user } = params;
-
+    async signIn({ user, account, profile }) {
       try {
         const existingUser = await getUser(user.email as string);
 
@@ -72,6 +70,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         console.error("Sign-in error:", error);
         return false;
       }
+    },
+    async session({ session, user }) {
+      const currUser = await getUser(session.user.email);
+      if (currUser?.id) {
+        session.user.id = currUser.id;
+      }
+      return session;
     },
   },
   pages: {

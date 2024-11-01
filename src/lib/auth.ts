@@ -1,6 +1,6 @@
 import { createUser, getUser } from "@/services/data-service";
 import { verifyPassword } from "@/utils/password";
-import NextAuth, { CredentialsSignin, User } from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     authorized: async ({ auth }) => {
       return !!auth;
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user }) {
       try {
         const existingUser = await getUser(user.email as string);
 
@@ -71,7 +71,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return false;
       }
     },
-    async session({ session, user }) {
+    async session({ session }) {
       const currUser = await getUser(session.user.email);
       if (currUser?.id) {
         session.user.id = currUser.id;

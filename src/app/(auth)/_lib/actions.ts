@@ -2,7 +2,6 @@
 
 import { signIn } from "@/lib/auth";
 import { CredentialsSchema } from "./types";
-import { redirect } from "next/navigation";
 
 export async function signInWithGoogle() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -24,16 +23,19 @@ export async function signInWithCredentials(User: unknown) {
   }
 
   try {
-    await signIn("credentials", {
+    const response = await signIn("credentials", {
       redirect: false,
       callback: "/",
       email: result.data.email,
       password: result.data.password,
     });
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
 
-  redirect("/dashboard");
+    if (response?.error) {
+      throw new Error(response.error.message);
+    }
+
+    return { data: response };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
 }

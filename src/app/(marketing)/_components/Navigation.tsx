@@ -32,9 +32,11 @@ export default function Navigation() {
         </div>
         <div className="hidden md:flex md:space-x-4">
           <Link href="/sign-up">
-            <Button variant="ghost">Login</Button>
+            <Button variant="ghost">Sign up</Button>
           </Link>
-          <Button>Be our partner</Button>
+          <Link href="/sign-in">
+            <Button className="px-5">Login</Button>
+          </Link>
         </div>
         <div className="md:hidden">
           <NavMobile />

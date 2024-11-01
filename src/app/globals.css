@@ -68,7 +68,7 @@ body {
     width: 60px;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 8px solid #231332;
+    border: 8px solid #94a3b8;
     border-right-color: transparent;
     animation: rotate 1s infinite linear;
   }
@@ -78,7 +78,7 @@ body {
     width: 20px;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 2px solid #231332;
+    border: 2px solid #43484f;
     border-right-color: transparent;
     animation: rotate 1s infinite linear;
   }

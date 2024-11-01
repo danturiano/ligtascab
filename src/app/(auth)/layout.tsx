@@ -1,5 +1,4 @@
 import { Toaster } from "react-hot-toast";
-import Navigation from "./_components/Navigation";
 
 export default async function AuthLayout({
   children,
@@ -8,7 +7,6 @@ export default async function AuthLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
-      <Navigation />
       {children}
       <Toaster
         position="bottom-center"

@@ -14,9 +14,11 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 import { signInWithCredentials } from "../_lib/actions";
 import { CredentialsSchema } from "../_lib/types";
+import { redirect } from "next/navigation";
 
 export default function SignInForm() {
   const [isPending, startTransition] = useTransition();
@@ -37,7 +39,13 @@ export default function SignInForm() {
 
   const verifyCredentials = async (data: z.infer<typeof CredentialsSchema>) => {
     const response = await signInWithCredentials(data);
-    console.log(response);
+
+    if (response.error) {
+      toast.error("Invalid credentials");
+    } else {
+      toast.success("Successfully signed in!");
+      redirect("/dashboard");
+    }
   };
 
   return (

@@ -1,15 +1,10 @@
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import GoogleButton from "../_components/GoogleButton";
-import SignUpForm from "../_components/SignUpForm";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Navigation from "../_components/Navigation";
+import SignUpForm from "../_components/SignUpForm";
 
 export default async function SignUpPage() {
-  const session = await auth();
-  if (session) redirect("/dashboard");
-
   return (
     <>
       <Navigation />

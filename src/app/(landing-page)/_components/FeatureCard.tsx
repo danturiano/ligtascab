@@ -17,7 +17,7 @@ export default function FeatureCard({
         {children}
         <p className="font-bold text-sm md:text-xl text-primary">{heading}</p>
       </div>
-      <p className="text-xs md:text-lg text-pretty text-muted md:text-left">
+      <p className="text-xs md:text-lg text-pretty text-muted-foreground md:text-left">
         {subheading}
       </p>
     </div>

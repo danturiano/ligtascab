@@ -1,7 +1,7 @@
-import Link from "next/link";
-import NavMobile from "./NavMobile";
 import BrandLogo from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import NavMobile from "./NavMobile";
 
 export default function Navigation() {
   return (

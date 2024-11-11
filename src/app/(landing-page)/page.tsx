@@ -26,7 +26,7 @@ export default function HomePage() {
             Commute With <BrushText text="Ease." />
           </div>
         </h1>
-        <p className="text-gray-600 text-lg md:text-2xl lg:text-3xl max-w-screen-xl text-pretty md:text-balance leading-none">
+        <p className="text-muted-foreground text-lg md:text-2xl lg:text-3xl max-w-screen-xl text-pretty md:text-balance leading-none">
           Systemizing your daily travel by combining convenience, comfort, and
           efficiency for a stress-free journey every time.
         </p>
@@ -115,7 +115,7 @@ export default function HomePage() {
             variant="secondary"
           >
             <Image src={apple} alt="apple logo" className="md:h-10 md:w-10" />
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start text-background">
               <p className="text-xs md:text-lg">Download on</p>
               <p className="text-md font-bold md:text-xl">Apple Store</p>
             </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
             variant="secondary"
           >
             <Image src={android} alt="apple logo" className="md:h-10 md:w-10" />
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start text-background">
               <p className="text-xs md:text-lg">Download on</p>
               <p className="text-md font-bold md:text-xl">Play Store</p>
             </div>

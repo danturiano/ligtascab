@@ -6,7 +6,7 @@ export default function BrandLogo() {
     <div className="flex items-center gap-2 font-extrabold flex-shrink-0 tracking-tighter text-2xl text-primary">
       <Image src={logo} alt="brandlogo ligtascab" height={24} width={24} />
       <p>
-        Ligtas<span className="text-accent">cab.</span>
+        Ligtas<span className="text-secondary">cab.</span>
       </p>
     </div>
   );

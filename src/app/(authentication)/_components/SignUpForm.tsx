@@ -1,6 +1,5 @@
 "use client";
 
-import { register } from "@/app/(auth)/actions";
 import SpinnerMini from "@/components/SpinnerMini";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { UserSchema } from "../_lib/types";
 import { redirect } from "next/navigation";
+import { register } from "../_lib/actions";
 
 export default function SignUpForm() {
   const [isPending, startTransition] = useTransition();

@@ -32,7 +32,7 @@ export default function Navigation() {
         </div>
         <div className="hidden md:flex md:space-x-4">
           <Link href="/sign-up">
-            <Button variant="ghost">Sign up</Button>
+            <Button variant="outline">Sign up</Button>
           </Link>
           <Link href="/sign-in">
             <Button className="px-5">Login</Button>

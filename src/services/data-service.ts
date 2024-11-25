@@ -3,9 +3,9 @@ import supabase from "@/lib/supabase";
 type newUser = {
   created_at?: string;
   email: string | null;
-  fullName: string | null;
+  fullName: string | undefined;
   id?: string;
-  image?: string | null;
+  image?: string | undefined;
   password?: string | null;
 };
 
@@ -13,6 +13,7 @@ export async function createUser(newUser: newUser) {
   const { data, error } = await supabase.from("users").insert([newUser]);
 
   if (error) {
+    console.log(error);
     throw new Error("User could not be created");
   }
 

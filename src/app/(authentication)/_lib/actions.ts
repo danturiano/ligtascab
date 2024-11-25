@@ -1,9 +1,9 @@
 "use server";
 
 import { signIn } from "@/app/(authentication)/_lib/auth";
-import { CredentialsSchema, UserSchema } from "./types";
-import { createUser, getUser } from "@/services/data-service";
 import { saltAndHashPassword } from "@/lib/utils";
+import { createUser, getUser } from "@/services/data-service";
+import { CredentialsSchema, UserSchema } from "./types";
 
 export async function signInWithGoogle() {
   await signIn("google", { redirectTo: "/dashboard" });

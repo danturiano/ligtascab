@@ -1,13 +1,11 @@
-import Image from "next/image";
-import logo from "/public/logo.png";
+import Image from 'next/image';
+import logo1 from '/public/logo-try.svg';
 
 export default function BrandLogo() {
-  return (
-    <div className="flex items-center gap-2 font-extrabold flex-shrink-0 tracking-tighter text-2xl text-primary">
-      <Image src={logo} alt="brandlogo ligtascab" height={24} width={24} />
-      <p>
-        Ligtas<span className="text-secondary">cab.</span>
-      </p>
-    </div>
-  );
+	return (
+		<div className="flex items-center gap-2 font-extrabold tracking-tighter text-[1.68rem] text-primary">
+			<Image src={logo1} alt="brandlogo ligtascab" height={26} width={26} />
+			<p className="font-nunito">ligtascab.</p>
+		</div>
+	);
 }

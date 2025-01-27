@@ -1,9 +1,10 @@
 'use server';
 
-import { signIn } from '@/app/(authentication)/_lib/auth';
+import { auth, signIn } from '@/app/(authentication)/_lib/auth';
+import supabase from '@/lib/supabase';
 import { saltAndHashPassword } from '@/lib/utils';
-import { createUser, getUser } from '@/services/data-service';
-import { CredentialsSchema, UserSchema } from './types';
+import { createUser, getUser, updateUser } from '@/services/data-service';
+import { CredentialsSchema, ProfileSchema, UserSchema } from './types';
 
 export async function signInWithGoogle() {
 	await signIn('google', { redirectTo: '/dashboard' });
@@ -28,7 +29,7 @@ export async function signInWithCredentials(User: unknown) {
 		const response = await signIn('credentials', {
 			redirect: false,
 			callback: '/',
-			email: result.data.email,
+			phone_number: result.data.phone_number,
 			password: result.data.password,
 		});
 
@@ -59,7 +60,7 @@ export async function register(User: unknown) {
 
 	const convertedNumber = result.data.phone_number.replace(/^\+63/, '0');
 
-	const user = await getUser(result.data.phone_number);
+	const user = await getUser(convertedNumber);
 
 	if (user) {
 		return {
@@ -84,5 +85,33 @@ export async function register(User: unknown) {
 
 	if (result.success) {
 		return { message: 'Account created sucessfully' };
+	}
+}
+
+export async function updateProfile(User: unknown) {
+	const result = ProfileSchema.safeParse(User);
+
+	if (!result.success) {
+		let errorMessage = '';
+
+		result.error.issues.forEach((issue) => {
+			errorMessage = errorMessage + issue.path[0] + ': ' + issue.message + '. ';
+		});
+
+		return {
+			error: errorMessage,
+		};
+	}
+
+	const userProfile = {
+		first_name: result.data.first_name,
+		last_name: result.data.last_name,
+		email: result.data.email,
+	};
+
+	await updateUser(userProfile);
+
+	if (result.success) {
+		return { message: 'Success!' };
 	}
 }

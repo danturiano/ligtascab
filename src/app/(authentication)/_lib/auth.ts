@@ -1,30 +1,25 @@
 import { verifyPassword } from '@/lib/utils';
-import { createUser, getUser } from '@/services/data-service';
+import { getUser } from '@/services/data-service';
 import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import Google from 'next-auth/providers/google';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	providers: [
-		Google({
-			clientId: process.env.GOOGLE_CLIENT_ID!,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-		}),
 		Credentials({
 			credentials: {
-				email: { label: 'Email', type: 'email' },
+				phone_number: { label: 'Phone number', type: 'string' },
 				password: { label: 'Password', type: 'password' },
 			},
 			authorize: async (credentials) => {
-				const email = credentials.email as string | undefined;
+				const phone_number = credentials.phone_number as string | undefined;
 				const password = credentials.password as string | undefined;
 
-				if (!email || !password) {
+				if (!phone_number || !password) {
 					throw new CredentialsSignin('Please provide both email & password');
 				}
 
 				// First get the user without password verification
-				const user = await getUser(email);
+				const user = await getUser(phone_number);
 
 				if (!user) {
 					throw new Error('Invalid email');
@@ -43,9 +38,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
 				// Return user data without sensitive information
 				const userData = {
-					fullName: user.fullName,
-					email: user.email,
 					id: user.id,
+					phone_number: user.phone_number,
 				};
 
 				return userData;
@@ -55,24 +49,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 	callbacks: {
 		authorized: async ({ auth }) => {
 			return !!auth;
-		},
-		async signIn({ user }) {
-			try {
-				const existingUser = await getUser(user.email as string);
-
-				if (!existingUser) {
-					await createUser({
-						email: user.email as string,
-						fullName: user.name as string,
-						image: user.image as string,
-					});
-				}
-
-				return true;
-			} catch (error) {
-				console.error('Sign-in error:', error);
-				return false;
-			}
 		},
 		async session({ session }) {
 			const currUser = await getUser(session.user.email);

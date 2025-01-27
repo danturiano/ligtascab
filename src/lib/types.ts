@@ -117,7 +117,7 @@ export type Database = {
 					image: string | null;
 					isNewUser: boolean;
 					password: string | null;
-					phone_number: string | null;
+					phone_number: string;
 					role: Database['public']['Enums']['role'];
 				};
 				Insert: {
@@ -128,7 +128,7 @@ export type Database = {
 					image?: string | null;
 					isNewUser?: boolean;
 					password?: string | null;
-					phone_number?: string | null;
+					phone_number: string;
 					role?: Database['public']['Enums']['role'];
 				};
 				Update: {
@@ -139,7 +139,7 @@ export type Database = {
 					image?: string | null;
 					isNewUser?: boolean;
 					password?: string | null;
-					phone_number?: string | null;
+					phone_number?: string;
 					role?: Database['public']['Enums']['role'];
 				};
 				Relationships: [];

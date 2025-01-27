@@ -1,87 +1,88 @@
-"use server";
+'use server';
 
-import { signIn } from "@/app/(authentication)/_lib/auth";
-import { saltAndHashPassword } from "@/lib/utils";
-import { createUser, getUser } from "@/services/data-service";
-import { CredentialsSchema, UserSchema } from "./types";
+import { signIn } from '@/app/(authentication)/_lib/auth';
+import { saltAndHashPassword } from '@/lib/utils';
+import { createUser, getUser } from '@/services/data-service';
+import { CredentialsSchema, UserSchema } from './types';
 
 export async function signInWithGoogle() {
-  await signIn("google", { redirectTo: "/dashboard" });
+	await signIn('google', { redirectTo: '/dashboard' });
 }
 
 export async function signInWithCredentials(User: unknown) {
-  const result = CredentialsSchema.safeParse(User);
+	const result = CredentialsSchema.safeParse(User);
 
-  if (!result.success) {
-    let errorMessage = "";
+	if (!result.success) {
+		let errorMessage = '';
 
-    result.error.issues.forEach((issue) => {
-      errorMessage = errorMessage + issue.path[0] + ": " + issue.message + ". ";
-    });
+		result.error.issues.forEach((issue) => {
+			errorMessage = errorMessage + issue.path[0] + ': ' + issue.message + '. ';
+		});
 
-    return {
-      error: errorMessage,
-    };
-  }
+		return {
+			error: errorMessage,
+		};
+	}
 
-  try {
-    const response = await signIn("credentials", {
-      redirect: false,
-      callback: "/",
-      email: result.data.email,
-      password: result.data.password,
-    });
+	try {
+		const response = await signIn('credentials', {
+			redirect: false,
+			callback: '/',
+			email: result.data.email,
+			password: result.data.password,
+		});
 
-    if (response?.error) {
-      throw new Error(response.error.message);
-    }
+		if (response?.error) {
+			throw new Error(response.error.message);
+		}
 
-    return { data: response };
-  } catch (error) {
-    return { error: (error as Error).message };
-  }
+		return { data: response };
+	} catch (error) {
+		return { error: (error as Error).message };
+	}
 }
 
 export async function register(User: unknown) {
-  const result = UserSchema.safeParse(User);
+	const result = UserSchema.safeParse(User);
 
-  if (!result.success) {
-    let errorMessage = "";
+	if (!result.success) {
+		let errorMessage = '';
 
-    result.error.issues.forEach((issue) => {
-      errorMessage = errorMessage + issue.path[0] + ": " + issue.message + ". ";
-    });
+		result.error.issues.forEach((issue) => {
+			errorMessage = errorMessage + issue.path[0] + ': ' + issue.message + '. ';
+		});
 
-    return {
-      error: errorMessage,
-    };
-  }
+		return {
+			error: errorMessage,
+		};
+	}
 
-  const user = await getUser(result.data.email);
+	const convertedNumber = result.data.phone_number.replace(/^\+63/, '0');
 
-  if (user) {
-    return {
-      error: "User already exists",
-    };
-  }
+	const user = await getUser(result.data.phone_number);
 
-  if (result.data.password !== result.data.confirm_password) {
-    return {
-      error: "Password does not match",
-    };
-  }
+	if (user) {
+		return {
+			error: 'Phone number already used.',
+		};
+	}
 
-  const pwHash = saltAndHashPassword(result.data.password);
+	if (result.data.password !== result.data.confirm_password) {
+		return {
+			error: 'Password does not match',
+		};
+	}
 
-  const newUser = {
-    email: result.data.email,
-    fullName: result.data.fullName,
-    password: pwHash,
-  };
+	const pwHash = saltAndHashPassword(result.data.password);
 
-  await createUser(newUser);
+	const newUser = {
+		phone_number: convertedNumber,
+		password: pwHash,
+	};
 
-  if (result.success) {
-    return { message: "Account created sucessfully" };
-  }
+	await createUser(newUser);
+
+	if (result.success) {
+		return { message: 'Account created sucessfully' };
+	}
 }

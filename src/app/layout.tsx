@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Nunito } from 'next/font/google';
+import { Inter, Nunito, Poppins } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -8,11 +8,17 @@ const inter = Inter({
 	variable: '--font-inter',
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const nunito = Nunito({
 	subsets: ['latin'],
 	display: 'swap',
 	variable: '--font-nunito',
+});
+
+const poppins = Poppins({
+	subsets: ['latin'],
+	display: 'swap',
+	variable: '--font-poppins',
+	weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +35,9 @@ export default function RootLayout({
 		<>
 			<html lang="en" suppressHydrationWarning>
 				<head />
-				<body className={`${inter.variable} ${nunito.variable} `}>
+				<body
+					className={`${inter.variable} ${nunito.variable} ${poppins.variable} text-[#1D1E20]`}
+				>
 					{children}
 				</body>
 			</html>

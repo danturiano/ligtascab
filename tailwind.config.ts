@@ -12,6 +12,7 @@ const config: Config = {
 			fontFamily: {
 				inter: 'var(--font-inter)',
 				nunito: 'var(--font-nunito)',
+				poppins: 'var(--font-poppins)',
 			},
 			container: {
 				center: 'true',
@@ -20,7 +21,7 @@ const config: Config = {
 					sm: '100%',
 					md: '100%',
 					lg: '100%',
-					xl: '1200px',
+					xl: '1400px',
 				},
 			},
 			colors: {

@@ -42,7 +42,7 @@ export default function SignUpForm() {
 		const response = await register(data);
 		if (response?.message) {
 			toast.success(response.message);
-			redirect('/get-started');
+			redirect('/sign-in');
 		}
 		if (response?.error) {
 			toast.error(response.error);

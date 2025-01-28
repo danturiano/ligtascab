@@ -1,7 +1,21 @@
 import { verifyPassword } from '@/lib/utils';
 import { getUser } from '@/services/data-service';
-import NextAuth, { CredentialsSignin } from 'next-auth';
+import NextAuth, { CredentialsSignin, DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+
+declare module 'next-auth' {
+	interface User {
+		id?: string | undefined;
+		email?: string | undefined | null;
+		phone_number: string;
+	}
+
+	interface Session {
+		user: User & DefaultSession['user'];
+		expires: string;
+		error: string;
+	}
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	providers: [
@@ -50,15 +64,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 		authorized: async ({ auth }) => {
 			return !!auth;
 		},
-		async session({ session }) {
-			const currUser = await getUser(session.user.email);
-			if (currUser?.id) {
-				session.user.id = currUser.id;
+		async signIn({ user }) {
+			try {
+				const existingUser = await getUser(user.phone_number);
+
+				return true;
+			} catch (error) {
+				console.error('Sign-in error:', error);
+				return false;
 			}
-			return session;
+		},
+		async jwt({ token, user, account }) {
+			if (account && user) {
+				token.id = user.id;
+				token.phone_number = user.phone_number;
+			}
+			return token;
+		},
+		async session({ session, token }) {
+			return {
+				...session,
+				user: {
+					...session.user,
+					id: token.id as string,
+					phone_number: token.phone_number as string,
+				},
+			};
 		},
 	},
 	pages: {
 		signIn: '/sign-in',
 	},
+	session: { strategy: 'jwt' },
 });

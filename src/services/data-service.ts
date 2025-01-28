@@ -1,21 +1,18 @@
-import { auth } from '@/app/(authentication)/_lib/auth';
+import { auth } from '@/lib/auth';
 import supabase from '@/lib/supabase';
 
-type newUser = {
-	id?: string;
-	created_at?: string;
-	phone_number?: string;
-	password?: string;
-};
-
 type User = {
+	created_at?: string;
 	email?: string | null;
-	first_name?: string | null;
-	last_name?: string | null;
-	image?: string | undefined;
+	fullName?: string | null;
+	id?: string;
+	image?: string | null;
+	isNewUser?: boolean;
+	password: string;
+	phone_number: string;
 };
 
-export async function createUser(newUser: newUser) {
+export async function createUser(newUser: User) {
 	const { data, error } = await supabase.from('users').insert([newUser]);
 
 	if (error) {
@@ -26,19 +23,19 @@ export async function createUser(newUser: newUser) {
 	return { data, error };
 }
 
-export async function updateUser(User: User) {
-	const { data, error } = await supabase
-		.from('users')
-		.update([User])
-		.eq('id', user?.id);
+// export async function updateUser(User: User) {
+// 	const { data, error } = await supabase
+// 		.from('users')
+// 		.update([User])
+// 		.eq('id', user?.id);
 
-	if (error) {
-		console.log(error);
-		throw new Error('User could not be created');
-	}
+// 	if (error) {
+// 		console.log(error);
+// 		throw new Error('User could not be created');
+// 	}
 
-	return { data, error };
-}
+// 	return { data, error };
+// }
 
 export async function getUser(phone_number: string) {
 	let query = supabase

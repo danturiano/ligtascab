@@ -1,9 +1,8 @@
 'use server';
 
-import { auth, signIn } from '@/app/(authentication)/_lib/auth';
-import supabase from '@/lib/supabase';
+import { signIn } from '@/lib/auth';
 import { saltAndHashPassword } from '@/lib/utils';
-import { createUser, getUser, updateUser } from '@/services/data-service';
+import { createUser, getUser } from '@/services/data-service';
 import { CredentialsSchema, ProfileSchema, UserSchema } from './types';
 
 export async function signInWithGoogle() {
@@ -88,30 +87,30 @@ export async function register(User: unknown) {
 	}
 }
 
-export async function updateProfile(User: unknown) {
-	const result = ProfileSchema.safeParse(User);
+// export async function updateProfile(User: unknown) {
+// 	const result = ProfileSchema.safeParse(User);
 
-	if (!result.success) {
-		let errorMessage = '';
+// 	if (!result.success) {
+// 		let errorMessage = '';
 
-		result.error.issues.forEach((issue) => {
-			errorMessage = errorMessage + issue.path[0] + ': ' + issue.message + '. ';
-		});
+// 		result.error.issues.forEach((issue) => {
+// 			errorMessage = errorMessage + issue.path[0] + ': ' + issue.message + '. ';
+// 		});
 
-		return {
-			error: errorMessage,
-		};
-	}
+// 		return {
+// 			error: errorMessage,
+// 		};
+// 	}
 
-	const userProfile = {
-		first_name: result.data.first_name,
-		last_name: result.data.last_name,
-		email: result.data.email,
-	};
+// 	const userProfile = {
+// 		first_name: result.data.first_name,
+// 		last_name: result.data.last_name,
+// 		email: result.data.email,
+// 	};
 
-	await updateUser(userProfile);
+// 	await updateUser(userProfile);
 
-	if (result.success) {
-		return { message: 'Success!' };
-	}
-}
+// 	if (result.success) {
+// 		return { message: 'Success!' };
+// 	}
+// }

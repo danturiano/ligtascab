@@ -1,15 +1,22 @@
+'use server';
+
 import { auth } from '@/lib/auth';
 import supabase from '@/lib/supabase';
 
 type User = {
 	created_at?: string;
-	email?: string | null;
-	fullName?: string | null;
 	id?: string;
-	image?: string | null;
-	isNewUser?: boolean;
 	password: string;
 	phone_number: string;
+};
+
+type UserUpdate = {
+	first_name: string;
+	last_name: string;
+	email: string;
+	subscribe_newsletter: boolean;
+	isNewUser: boolean;
+	image?: string;
 };
 
 export async function createUser(newUser: User) {
@@ -23,22 +30,26 @@ export async function createUser(newUser: User) {
 	return { data, error };
 }
 
-// export async function updateUser(User: User) {
-// 	const { data, error } = await supabase
-// 		.from('users')
-// 		.update([User])
-// 		.eq('id', user?.id);
+export async function updateUser(user: UserUpdate) {
+	const session = await auth();
 
-// 	if (error) {
-// 		console.log(error);
-// 		throw new Error('User could not be created');
-// 	}
+	const phone_number = session?.user.phone_number as string;
 
-// 	return { data, error };
-// }
+	const { data, error } = await supabase
+		.from('users')
+		.update(user)
+		.eq('phone_number', phone_number);
+
+	if (error) {
+		console.log(error);
+		throw new Error('User could not be created');
+	}
+
+	return { data, error };
+}
 
 export async function getUser(phone_number: string) {
-	let query = supabase
+	const query = supabase
 		.from('users')
 		.select('*')
 		.eq('phone_number', phone_number);

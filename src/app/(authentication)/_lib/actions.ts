@@ -3,11 +3,7 @@
 import { signIn } from '@/lib/auth';
 import { saltAndHashPassword } from '@/lib/utils';
 import { createUser, getUser } from '@/services/data-service';
-import { CredentialsSchema, ProfileSchema, UserSchema } from './types';
-
-export async function signInWithGoogle() {
-	await signIn('google', { redirectTo: '/dashboard' });
-}
+import { CredentialsSchema, UserSchema } from './types';
 
 export async function signInWithCredentials(User: unknown) {
 	const result = CredentialsSchema.safeParse(User);
@@ -86,31 +82,3 @@ export async function register(User: unknown) {
 		return { message: 'Account created sucessfully' };
 	}
 }
-
-// export async function updateProfile(User: unknown) {
-// 	const result = ProfileSchema.safeParse(User);
-
-// 	if (!result.success) {
-// 		let errorMessage = '';
-
-// 		result.error.issues.forEach((issue) => {
-// 			errorMessage = errorMessage + issue.path[0] + ': ' + issue.message + '. ';
-// 		});
-
-// 		return {
-// 			error: errorMessage,
-// 		};
-// 	}
-
-// 	const userProfile = {
-// 		first_name: result.data.first_name,
-// 		last_name: result.data.last_name,
-// 		email: result.data.email,
-// 	};
-
-// 	await updateUser(userProfile);
-
-// 	if (result.success) {
-// 		return { message: 'Success!' };
-// 	}
-// }

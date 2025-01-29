@@ -1,4 +1,3 @@
-import { subscribe } from 'diagnostics_channel';
 import { z } from 'zod';
 
 export const UserSchema = z.object({
@@ -23,12 +22,4 @@ export const CredentialsSchema = z.object({
 	password: z.string().min(6, {
 		message: 'password must be at least 6 characters',
 	}),
-});
-
-export const ProfileSchema = z.object({
-	first_name: z.string().min(2),
-	last_name: z.string().min(2),
-	email: z.string().email(),
-	profile_picture: z.string().url(),
-	subscribe_to_newsletter: z.boolean(),
 });

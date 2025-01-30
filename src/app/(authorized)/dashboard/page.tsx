@@ -1,7 +1,7 @@
+import Navigation from '@/features/dashboard/components/Navigation';
+import Sidebar from '@/features/dashboard/components/Sidebar';
+import { isNewUser } from '@/services/data-service';
 import { redirect } from 'next/navigation';
-import { isNewUser } from '../account-setup/_lib/actions';
-import Navigation from './_components/Navigation';
-import Sidebar from './_components/Sidebar';
 
 export default async function Page() {
 	const newUser = await isNewUser();

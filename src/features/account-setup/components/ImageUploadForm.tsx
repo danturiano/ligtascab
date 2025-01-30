@@ -4,11 +4,7 @@ import SpinnerMini from '@/components/SpinnerMini';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { convertBlobUrlToFile } from '@/lib/utils';
-import { updateUser } from '@/services/data-service';
-import Image from 'next/image';
 import { ChangeEvent, useRef, useState, useTransition } from 'react';
-import { uploadImage } from '../_lib/actions';
 
 export default function ImageUploadForm() {
 	const [isPending, startTransition] = useTransition();
@@ -30,37 +26,37 @@ export default function ImageUploadForm() {
 		}
 	};
 
-	const handleClickUploadImagesButton = () => {
-		startTransition(async () => {
-			if (!image) return;
+	// const handleClickUploadImagesButton = () => {
+	// 	startTransition(async () => {
+	// 		if (!image) return;
 
-			const imageFile = await convertBlobUrlToFile(image);
+	// 		const imageFile = await convertBlobUrlToFile(image);
 
-			const { imageUrl, error } = await uploadImage({
-				file: imageFile,
-				bucket: 'image_profile',
-			});
+	// 		const { imageUrl, error } = await uploadImage({
+	// 			file: imageFile,
+	// 			bucket: 'image_profile',
+	// 		});
 
-			if (error) {
-				console.error(error);
-				return;
-			}
+	// 		if (error) {
+	// 			console.error(error);
+	// 			return;
+	// 		}
 
-			console.log(imageUrl);
+	// 		console.log(imageUrl);
 
-			await updateUser({ image: imageUrl });
-		});
-	};
+	// 		await updateUser({ image: imageUrl });
+	// 	});
+	// };
 
-	const removeImage = () => {
-		if (image) {
-			URL.revokeObjectURL(image);
-			setImage(undefined);
-		}
-		if (imageInputRef.current) {
-			imageInputRef.current.value = '';
-		}
-	};
+	// const removeImage = () => {
+	// 	if (image) {
+	// 		URL.revokeObjectURL(image);
+	// 		setImage(undefined);
+	// 	}
+	// 	if (imageInputRef.current) {
+	// 		imageInputRef.current.value = '';
+	// 	}
+	// };
 
 	return (
 		<div className="flex items-center gap-4">
@@ -84,11 +80,7 @@ export default function ImageUploadForm() {
 					>
 						{isPending ? <SpinnerMini /> : 'Choose Image'}
 					</Button>
-					<Button
-						variant={'outline'}
-						disabled={false}
-						onClick={handleClickUploadImagesButton}
-					>
+					<Button variant={'outline'} disabled={false}>
 						Upload
 					</Button>
 				</div>

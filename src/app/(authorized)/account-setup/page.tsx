@@ -1,8 +1,8 @@
 import BrandLogo from '@/components/BrandLogo';
+import ProfilingForm from '@/features/account-setup/components/ProfilingForm';
+import { isNewUser } from '@/services/data-service';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import ProfilingForm from './_components/ProfilingForm';
-import { isNewUser } from './_lib/actions';
 import dashboard from '/public/dashboard-ex.svg';
 
 export default async function Page() {

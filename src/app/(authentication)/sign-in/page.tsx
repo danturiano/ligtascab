@@ -1,8 +1,7 @@
 import { Separator } from '@/components/ui/separator';
+import Navigation from '@/features/authentication/components/Navigation';
+import SignInForm from '@/features/authentication/components/SignInForm';
 import Link from 'next/link';
-import GoogleButton from '../_components/GoogleButton';
-import Navigation from '../_components/Navigation';
-import SignInForm from '../_components/SignInForm';
 
 export default async function SignInPage() {
 	return (
@@ -33,7 +32,6 @@ export default async function SignInPage() {
 						</p>
 						<Separator orientation="horizontal" />
 					</div>
-					<GoogleButton />
 				</div>
 				<p className="text-xs text-muted-foreground text-center mt-4">
 					By signing in, you agree to our{' '}

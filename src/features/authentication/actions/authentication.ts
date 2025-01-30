@@ -3,7 +3,7 @@
 import { signIn } from '@/lib/auth';
 import { saltAndHashPassword } from '@/lib/utils';
 import { createUser, getUser } from '@/services/data-service';
-import { CredentialsSchema, UserSchema } from './types';
+import { CredentialsSchema, UserSchema } from '../schemas/authentication';
 
 export async function signInWithCredentials(User: unknown) {
 	const result = CredentialsSchema.safeParse(User);

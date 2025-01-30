@@ -20,8 +20,8 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import { updateProfile } from '../_lib/actions';
-import { ProfileSchema } from '../_lib/types';
+import { updateProfile } from '../db/setup';
+import { ProfileSchema } from '../schemas/setup';
 
 export default function ProfilingForm() {
 	const [isPending, startTransition] = useTransition();

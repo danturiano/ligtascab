@@ -17,35 +17,34 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import { register } from '../_lib/actions';
-import { UserSchema } from '../_lib/types';
+import { signInWithCredentials } from '../actions/authentication';
+import { CredentialsSchema } from '../schemas/authentication';
 
-export default function SignUpForm() {
+export default function SignInForm() {
 	const [isPending, startTransition] = useTransition();
 
-	const form = useForm<z.infer<typeof UserSchema>>({
-		resolver: zodResolver(UserSchema),
+	const form = useForm<z.infer<typeof CredentialsSchema>>({
+		resolver: zodResolver(CredentialsSchema),
 		defaultValues: {
-			phone_number: '+63',
+			phone_number: '',
 			password: '',
-			confirm_password: '',
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof UserSchema>) {
+	function onSubmit(data: z.infer<typeof CredentialsSchema>) {
 		startTransition(() => {
-			registerCredentials(data);
+			verifyCredentials(data);
 		});
 	}
 
-	const registerCredentials = async (data: z.infer<typeof UserSchema>) => {
-		const response = await register(data);
-		if (response?.message) {
-			toast.success(response.message);
-			redirect('/sign-in');
-		}
-		if (response?.error) {
-			toast.error(response.error);
+	const verifyCredentials = async (data: z.infer<typeof CredentialsSchema>) => {
+		const response = await signInWithCredentials(data);
+
+		if (response.error) {
+			toast.error('Invalid credentials');
+		} else {
+			toast.success('Successfully signed in!');
+			redirect('/dashboard');
 		}
 	};
 
@@ -71,19 +70,6 @@ export default function SignUpForm() {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Password</FormLabel>
-							<FormControl>
-								<Input type="password" placeholder="●●●●●●" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="confirm_password"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Confirm password</FormLabel>
 							<FormControl>
 								<Input type="password" placeholder="●●●●●●" {...field} />
 							</FormControl>

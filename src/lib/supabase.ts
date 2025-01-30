@@ -1,4 +1,3 @@
-import { Database } from '@/lib/types';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;

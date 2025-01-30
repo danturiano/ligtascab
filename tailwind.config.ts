@@ -15,7 +15,7 @@ const config: Config = {
 				poppins: 'var(--font-poppins)',
 			},
 			container: {
-				center: 'true',
+				center: true,
 				padding: '1.5rem',
 				screens: {
 					sm: '100%',
@@ -105,6 +105,7 @@ const config: Config = {
 			},
 		},
 	},
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
 	plugins: [require('tailwindcss-animate')],
 };
 export default config;

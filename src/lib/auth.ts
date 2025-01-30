@@ -68,6 +68,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 			try {
 				const existingUser = await getUser(user.phone_number);
 
+				if (!existingUser) {
+					return false;
+				}
+
 				return true;
 			} catch (error) {
 				console.error('Sign-in error:', error);

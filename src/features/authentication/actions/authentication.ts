@@ -2,7 +2,8 @@
 
 import { signIn } from '@/lib/auth';
 import { saltAndHashPassword } from '@/lib/utils';
-import { createUser, getUser } from '@/services/data-service';
+import { getUser } from '@/services/data-service';
+import { createUser } from '../db/authentication';
 import { CredentialsSchema, UserSchema } from '../schemas/authentication';
 
 export async function signInWithCredentials(User: unknown) {

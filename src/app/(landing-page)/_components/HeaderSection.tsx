@@ -7,7 +7,7 @@ export default function HeaderSection() {
 				<h1>Safe and smart</h1>
 				<h1>public transportation.</h1>
 			</div>
-			<p className="text-lg font-poppins font-regular md:text-2xl lg:text-2xl max-w-screen-xl text-pretty md:text-balance text-black/80">
+			<p className="text-lg font-poppins font-regular md:text-2xl lg:text-2xl max-w-(--breakpoint-xl) text-pretty md:text-balance text-black/80">
 				Systemizing your daily travel by combining convenience, comfort, and
 				efficiency for a stress-free journey every time.
 			</p>

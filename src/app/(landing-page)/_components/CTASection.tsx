@@ -6,7 +6,7 @@ import apple from "/public/apple-brand.svg";
 
 export default function CTASection() {
   return (
-    <section className="lg:max-w-screen-lg bg-primary p-4 max-w-[90%] container rounded-md mt-16 md:mt-40 text-md leading-tight text-center items-center tracking-tighter text-balance flex flex-col gap-4 md:p-14 md:flex-row">
+    <section className="lg:max-w-(--breakpoint-lg) bg-primary p-4 max-w-[90%] container rounded-md mt-16 md:mt-40 text-md leading-tight text-center items-center tracking-tighter text-balance flex flex-col gap-4 md:p-14 md:flex-row">
       <h4 className="font-semibold text-lg text-primary-foreground leading-tight md:text-2xl lg:text-4xl md:text-start">
         Whether it’s a quick trip or a long journey, your ride is just a tap
         away.

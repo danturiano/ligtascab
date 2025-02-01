@@ -14,7 +14,7 @@ export default async function Page() {
 	return (
 		<div className="flex flex-col gap-4 items-center">
 			<BrandLogo />
-			<div className="max-w-[1100px] border border-gray-300 rounded-2xl items-center grid grid-cols-[0.9fr,1fr] gap-24">
+			<div className="max-w-[1100px] border border-gray-300 rounded-2xl items-center grid grid-cols-[0.9fr_1fr] gap-24">
 				<div className="p-16 flex flex-col gap-8">
 					<div>
 						<p>1/5</p>

@@ -33,7 +33,7 @@ export function AccordionDemo() {
     <Accordion
       type="single"
       collapsible
-      className="flex flex-col gap-2 w-full px-8 md:max-w-screen-xl lg:grid-cols-2 lg:grid lg:gap-12"
+      className="flex flex-col gap-2 w-full px-8 md:max-w-(--breakpoint-xl) lg:grid-cols-2 lg:grid lg:gap-12"
     >
       {faqItems.map((item, index) => {
         return (

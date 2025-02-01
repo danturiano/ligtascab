@@ -13,7 +13,7 @@ import PopoverItem from './PopoverItem';
 
 export default function Navigation() {
 	return (
-		<header className="py-4 fixed top-0 w-full z-10 shadow-sm bg-background/95 md:py-6 md:flex">
+		<header className="py-4 fixed top-0 w-full z-10 shadow-xs bg-background/95 md:py-6 md:flex">
 			<nav className="flex items-center justify-between container">
 				<div className="flex items-center gap-8">
 					<Link href="/">

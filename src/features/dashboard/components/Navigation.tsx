@@ -5,11 +5,9 @@ import SearchBar from './SearchBar';
 
 export default function Navigation() {
 	return (
-		<div className="w-full fixed h-16 px-4 z-50 bg-primary grid grid-cols-[auto,1fr] items-center">
-			<div className="w-auto">
-				<Logo />
-			</div>
-			<div className="flex items-center w-full justify-between">
+		<div className="w-full fixed h-16 px-4 z-50 bg-primary flex justify-between">
+			<Logo />
+			<div className="flex-1 flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<Notification />
 					<SearchBar />

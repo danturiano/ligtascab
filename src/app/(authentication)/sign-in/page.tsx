@@ -1,4 +1,3 @@
-import { Separator } from '@/components/ui/separator';
 import Navigation from '@/features/authentication/components/Navigation';
 import SignInForm from '@/features/authentication/components/SignInForm';
 import Link from 'next/link';
@@ -25,13 +24,6 @@ export default async function SignInPage() {
 						</div>
 					</div>
 					<SignInForm />
-					<div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center w-full">
-						<Separator orientation="horizontal" />
-						<p className="text-center text-xs text-muted-foreground font-semibold">
-							OR
-						</p>
-						<Separator orientation="horizontal" />
-					</div>
 				</div>
 				<p className="text-xs text-muted-foreground text-center mt-4">
 					By signing in, you agree to our{' '}

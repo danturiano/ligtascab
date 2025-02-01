@@ -51,7 +51,7 @@ export default function SignUpForm() {
 
 	return (
 		<Form {...form}>
-			<form className="w-full space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
+			<form className="w-full space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
 				<FormField
 					control={form.control}
 					name="phone_number"

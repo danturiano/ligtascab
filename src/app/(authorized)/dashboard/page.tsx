@@ -8,7 +8,6 @@ export default async function Page() {
 	if (newUser) {
 		redirect('/account-setup');
 	}
-
 	return (
 		<div className="h-screen flex flex-col">
 			<Navigation />

@@ -1,3 +1,5 @@
+'use server';
+
 import { auth } from '@/lib/auth';
 import supabase from '@/lib/supabase';
 import { ProfileSchema } from '../schemas/setup';

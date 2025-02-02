@@ -9,11 +9,14 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { auth } from '@/lib/auth';
+import { getUser } from '@/services/data-service';
 import { ChevronDown } from 'lucide-react';
 
 export default async function NavUser() {
 	const session = await auth();
 	if (!session?.user) return null;
+
+	const user = await getUser(session.user.phone_number);
 
 	return (
 		<div className="flex items-center">
@@ -22,16 +25,17 @@ export default async function NavUser() {
 					<Button className="min-w-52 hover:bg-[#1F9E7F] rounded-lg p-2 flex items-center gap-2 data-[state=open]:bg-[#1F9E7F]">
 						<Avatar className="h-8 w-8 rounded-full">
 							<AvatarImage
-								src={session.user.image ?? undefined}
-								alt={session.user.name ?? undefined}
+								src={user.image ?? undefined}
+								alt={user.first_name ?? undefined}
 							/>
-							<AvatarFallback className="rounded-lg">CN</AvatarFallback>
+							<AvatarFallback className="rounded-lg">
+								{user.first_name.charAt(0)}
+								{user.last_name.charAt(0)}
+							</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight text-white">
-							<span className="truncate font-semibold">
-								{session.user.name}
-							</span>
-							<span className="truncate text-xs">{session.user.email}</span>
+							<span className="truncate font-medium">{user.first_name}</span>
+							<span className="truncate text-xs">{user.email}</span>
 						</div>
 						<ChevronDown className="ml-auto size-4 text-white" />
 					</Button>

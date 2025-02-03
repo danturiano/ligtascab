@@ -81,12 +81,15 @@ export function DataTable<TData, TValue>({
 			<div className="flex items-center py-4">
 				<div className="flex gap-2 w-full">
 					<Input
-						placeholder="Filter by surname..."
+						placeholder="Filter by Plate Number"
 						value={
-							(table.getColumn('last_name')?.getFilterValue() as string) ?? ''
+							(table.getColumn('plate_number')?.getFilterValue() as string) ??
+							''
 						}
 						onChange={(event) =>
-							table.getColumn('last_name')?.setFilterValue(event.target.value)
+							table
+								.getColumn('plate_number')
+								?.setFilterValue(event.target.value)
 						}
 						className="max-w-sm"
 					/>
@@ -145,6 +148,7 @@ export function DataTable<TData, TValue>({
 								<TableRow
 									key={row.id}
 									data-state={row.getIsSelected() && 'selected'}
+									className=""
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>

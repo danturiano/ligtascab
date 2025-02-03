@@ -1,5 +1,5 @@
-import BrandLogo from '@/components/BrandLogo';
-import ProfilingForm from '@/features/account-setup/components/ProfilingForm';
+import BrandLogo from '@/components/brand-logo';
+import ProfilingForm from '@/features/account-setup/components/profiling-form';
 import { isNewUser } from '@/services/data-service';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';

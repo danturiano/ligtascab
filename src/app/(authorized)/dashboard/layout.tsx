@@ -1,4 +1,4 @@
-import Navigation from '@/features/dashboard/components/Navigation';
+import Navigation from '@/features/dashboard/components/dashboard-nav';
 import Sidebar from '@/features/dashboard/components/Sidebar';
 import { ReactNode } from 'react';
 

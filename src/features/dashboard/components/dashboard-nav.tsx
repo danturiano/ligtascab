@@ -1,7 +1,7 @@
-import Logo from './Logo';
-import NavUser from './NavUser';
+import Logo from './brand-logo';
+import NavUser from './nav-user';
 import Notification from './Notification';
-import SearchBar from './SearchBar';
+import SearchBar from './search-bar';
 
 export default function Navigation() {
 	return (

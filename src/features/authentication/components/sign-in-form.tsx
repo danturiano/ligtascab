@@ -1,6 +1,6 @@
 'use client';
 
-import SpinnerMini from '@/components/SpinnerMini';
+import SpinnerMini from '@/components/spinner-mini';
 import { Button } from '@/components/ui/button';
 import {
 	Form,

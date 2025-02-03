@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/table';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
+import { AddVehicle } from './add-vehicle';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -78,16 +79,19 @@ export function DataTable<TData, TValue>({
 	return (
 		<div className="w-full">
 			<div className="flex items-center py-4">
-				<Input
-					placeholder="Filter by surname..."
-					value={
-						(table.getColumn('last_name')?.getFilterValue() as string) ?? ''
-					}
-					onChange={(event) =>
-						table.getColumn('last_name')?.setFilterValue(event.target.value)
-					}
-					className="max-w-sm"
-				/>
+				<div className="flex gap-2 w-full">
+					<Input
+						placeholder="Filter by surname..."
+						value={
+							(table.getColumn('last_name')?.getFilterValue() as string) ?? ''
+						}
+						onChange={(event) =>
+							table.getColumn('last_name')?.setFilterValue(event.target.value)
+						}
+						className="max-w-sm"
+					/>
+					<AddVehicle />
+				</div>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="ml-auto">

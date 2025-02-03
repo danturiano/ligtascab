@@ -1,5 +1,5 @@
-import Navigation from '@/features/authentication/components/Navigation';
-import SignUpForm from '@/features/authentication/components/SignUpForm';
+import Navigation from '@/features/authentication/components/auth-nav';
+import SignUpForm from '@/features/authentication/components/sign-up-form';
 import Link from 'next/link';
 
 export default async function SignUpPage() {

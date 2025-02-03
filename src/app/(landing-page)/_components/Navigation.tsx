@@ -1,4 +1,4 @@
-import BrandLogo from '@/components/BrandLogo';
+import BrandLogo from '@/components/brand-logo';
 import { Button } from '@/components/ui/button';
 import {
 	Popover,

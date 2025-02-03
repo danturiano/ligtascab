@@ -1,5 +1,5 @@
-import Navigation from '@/features/authentication/components/Navigation';
-import SignInForm from '@/features/authentication/components/SignInForm';
+import Navigation from '@/features/authentication/components/auth-nav';
+import SignInForm from '@/features/authentication/components/sign-in-form';
 import Link from 'next/link';
 
 export default async function SignInPage() {

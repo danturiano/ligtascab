@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth';
 import { formatDate } from '@/lib/utils';
 import { revalidatePath } from 'next/cache';
-import { createVehicle } from '../db/vehicles';
+import { createVehicle, getAllVehicle } from '../db/vehicles';
 import { VehicleSchema } from '../schemas/vehicles';
 
 export async function registerVehicle(Vehicle: unknown) {
@@ -21,8 +21,16 @@ export async function registerVehicle(Vehicle: unknown) {
 		};
 	}
 
-	const session = await auth();
+	const isRegistered = await isVehicleRegistered(
+		result.data.plate_number,
+		result.data.registration_number
+	);
 
+	if (isRegistered) {
+		return { error: 'Vehicle is already registered.' };
+	}
+
+	const session = await auth();
 	const date = result.data.registration_expiry.toString();
 	const expiryDate = formatDate(date);
 
@@ -36,8 +44,21 @@ export async function registerVehicle(Vehicle: unknown) {
 	await createVehicle(newVehicle);
 
 	if (result.success) {
+		revalidatePath('/dashboard/manage-vehicle');
 		return { message: 'Account created sucessfully' };
 	}
+}
 
-	revalidatePath('/dashboard/manage-vehicle');
+export async function isVehicleRegistered(
+	plate_number: string,
+	registration_number: string
+) {
+	const vehicles = await getAllVehicle();
+	const isRegistered = vehicles.some(
+		(vehicle) =>
+			vehicle.plate_number === plate_number ||
+			vehicle.registration_number === registration_number
+	);
+
+	return isRegistered;
 }

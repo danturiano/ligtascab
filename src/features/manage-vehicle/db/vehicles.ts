@@ -1,6 +1,7 @@
 'use server';
 
 import supabase from '@/lib/supabase';
+import { revalidatePath } from 'next/cache';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -53,4 +54,17 @@ export async function createVehicle(newVehicle: Vehicle) {
 	}
 
 	return { data, error };
+}
+
+export async function deleteVehicle(id: string) {
+	const { error } = await supabase.from('vehicles').delete().eq('id', id);
+
+	if (error) {
+		console.log(error);
+		throw new Error('cannot delete vehicle');
+	}
+
+	revalidatePath('/dashboard/manage-vehicle');
+
+	return { error };
 }

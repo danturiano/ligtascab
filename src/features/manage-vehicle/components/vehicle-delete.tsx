@@ -44,7 +44,7 @@ export const VehicleDelete = ({ id }: { id: string }) => {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger className="cursor-pointer">
+			<DropdownMenuTrigger className="cursor-pointer p-0">
 				<Ellipsis />
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="space-y-2 p-2">

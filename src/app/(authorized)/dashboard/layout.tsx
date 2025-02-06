@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
 	return (
-		<div className="h-screen flex flex-col">
+		<div>
 			<Navigation />
 			<Sidebar>{children}</Sidebar>
 			<Toaster

@@ -11,17 +11,12 @@ import { VehicleDelete } from './vehicle-delete';
 
 export const columns: ColumnDef<Vehicle>[] = [
 	{
-		accessorKey: 'id',
-		header: () => <div className="hidden"></div>,
-		cell: () => <div className="hidden"></div>,
-	},
-	{
 		accessorKey: 'status',
-		header: 'Status',
+		header: () => <div className="ml-4">Status</div>,
 		cell: ({ row }) => {
 			const status = row.getValue('status') as string;
 			return (
-				<div>
+				<div className="ml-4">
 					{status === 'active' ? (
 						<Badge>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>
 					) : (
@@ -35,7 +30,10 @@ export const columns: ColumnDef<Vehicle>[] = [
 	},
 	{
 		accessorKey: 'plate_number',
-		header: 'Plate Number',
+		header: () => <div className="min-w-24">Plate Number</div>,
+		cell: ({ row }) => (
+			<div className="min-w-24">{row.getValue('plate_number')}</div>
+		),
 	},
 	{
 		accessorKey: 'registration_expiry',
@@ -65,11 +63,11 @@ export const columns: ColumnDef<Vehicle>[] = [
 	{
 		accessorKey: 'qr_code',
 		header: 'QR Code',
-		cell: ({ row }) => <GenerateQRCode id={row.getValue('id') as string} />,
+		cell: ({ row }) => <GenerateQRCode id={row.original.id as string} />,
 	},
 	{
 		id: 'actions',
 		enableHiding: false,
-		cell: ({ row }) => <VehicleDelete id={row.getValue('id') as string} />,
+		cell: ({ row }) => <VehicleDelete id={row.original.id as string} />,
 	},
 ];

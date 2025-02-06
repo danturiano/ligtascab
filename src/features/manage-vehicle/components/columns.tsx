@@ -4,9 +4,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Download } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { ArrowUpDown } from 'lucide-react';
 import { Vehicle } from '../db/vehicles';
+import GenerateQRCode from './generate-qr';
 import { VehicleDelete } from './vehicle-delete';
 
 export const columns: ColumnDef<Vehicle>[] = [
@@ -65,16 +65,7 @@ export const columns: ColumnDef<Vehicle>[] = [
 	{
 		accessorKey: 'qr_code',
 		header: 'QR Code',
-		cell: ({ row }) => (
-			<Button
-				onClick={() => redirect(`manage-vehicle/${row.getValue('id')}`)}
-				className="cursor-pointer [&_svg]:size-5"
-				variant={'ghost'}
-				size={'icon'}
-			>
-				<Download />
-			</Button>
-		),
+		cell: ({ row }) => <GenerateQRCode id={row.getValue('id') as string} />,
 	},
 	{
 		id: 'actions',

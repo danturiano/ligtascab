@@ -45,6 +45,22 @@ export async function getAllVehicle(): Promise<Vehicle[]> {
 	return vehicles ?? []; // Return drivers if not null, otherwise return an empty array
 }
 
+export async function getVehicle(
+	registration_number: string
+): Promise<Vehicle> {
+	const { data: vehicle, error } = await supabase
+		.from('vehicles')
+		.select()
+		.eq('registration_number', registration_number)
+		.single();
+
+	if (error) {
+		console.error('Error fetching drivers:', error);
+	}
+
+	return vehicle;
+}
+
 export async function createVehicle(newVehicle: Vehicle) {
 	const { data, error } = await supabase.from('vehicles').insert([newVehicle]);
 

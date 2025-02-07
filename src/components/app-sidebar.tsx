@@ -4,6 +4,7 @@ import {
 	AudioWaveform,
 	BookOpen,
 	Car,
+	FileClock,
 	GalleryVerticalEnd,
 	SquareTerminal,
 } from 'lucide-react';
@@ -42,6 +43,11 @@ const data = {
 			title: 'Dashboard',
 			url: '/dashboard',
 			icon: SquareTerminal,
+		},
+		{
+			title: 'Driver Shift Logs',
+			url: '/dashboard/driver-log',
+			icon: FileClock,
 		},
 		{
 			title: 'Triycle Management',

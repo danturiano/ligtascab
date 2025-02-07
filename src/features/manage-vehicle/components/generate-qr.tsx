@@ -31,10 +31,10 @@ export default function GenerateQRCode({ id }: { id: string }) {
 				<div className="flex items-center justify-center">
 					<QRCodeCanvas
 						value={id}
+						minVersion={1}
+						level="L"
 						size={180}
 						marginSize={4}
-						bgColor="#1FAB89"
-						fgColor="#ffffff"
 						title="Ligtascab"
 					/>
 				</div>

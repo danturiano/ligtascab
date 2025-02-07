@@ -1,13 +1,15 @@
 import Navigation from '@/features/dashboard/components/dashboard-nav';
 import Sidebar from '@/features/dashboard/components/sidebar';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
 	return (
 		<div>
 			<Navigation />
-			<Sidebar>{children}</Sidebar>
+			<Sidebar>
+				<Suspense>{children}</Suspense>
+			</Sidebar>
 			<Toaster
 				position="bottom-center"
 				containerStyle={{

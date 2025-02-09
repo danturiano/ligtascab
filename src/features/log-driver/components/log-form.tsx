@@ -1,0 +1,175 @@
+'use client';
+
+import SpinnerMini from '@/components/spinner-mini';
+import { Button } from '@/components/ui/button';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ChevronsUpDown } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
+import { createNewLog } from '../actions/logs';
+import { getAvailableVehicle } from '../db/logs';
+import { Driver, LogSchema } from '../schemas/logs';
+
+type LogFormProps = {
+	driver: Driver | null;
+};
+
+export default function LogForm({ driver }: LogFormProps) {
+	const [isPending, startTransition] = useTransition();
+	const [vehicles, setVehicles] = useState<string[]>([]);
+
+	const form = useForm<z.infer<typeof LogSchema>>({
+		resolver: zodResolver(LogSchema),
+		defaultValues: {
+			driver: {
+				first_name: '',
+				id: '',
+				last_name: '',
+				license_expiry: '',
+				license_number: '',
+				operator_id: '',
+				phone_number: '',
+			},
+			driver_name: '',
+			plate_number: '',
+		},
+	});
+
+	useEffect(() => {
+		if (driver) {
+			const driver_name = `${driver.first_name} ${driver.last_name}`;
+			form.setValue('driver_name', driver_name);
+			form.setValue('driver', driver);
+		}
+	}, [driver, form]);
+
+	useEffect(() => {
+		const fetchVehicles = async () => {
+			const availableVehicles = await getAvailableVehicle();
+			setVehicles(availableVehicles);
+		};
+		fetchVehicles();
+	}, []);
+
+	function onSubmit(data: z.infer<typeof LogSchema>) {
+		startTransition(() => {
+			addLog(data);
+		});
+	}
+
+	const addLog = async (data: z.infer<typeof LogSchema>) => {
+		const response = await createNewLog(data);
+		if (response?.message) {
+			toast.success(response.message);
+			form.reset();
+		}
+		if (response?.error) {
+			toast.error(response.error);
+		}
+	};
+
+	return (
+		<div className="w-[384px]">
+			<Form {...form}>
+				<form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+					<FormField
+						control={form.control}
+						name="driver_name"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Driver Name</FormLabel>
+								<FormControl>
+									<Input {...field} readOnly />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="plate_number"
+						render={({ field }) => (
+							<FormItem className="flex flex-col w-full">
+								<FormLabel>Select Available Vehicle</FormLabel>
+								<Popover>
+									<PopoverTrigger asChild>
+										<FormControl>
+											<Button
+												variant="outline"
+												role="combobox"
+												className={cn(
+													'w-full justify-between',
+													!field.value && 'text-muted-foreground'
+												)}
+											>
+												{field.value
+													? vehicles.find((vehicle) => vehicle === field.value)
+													: 'Select vehicle'}
+												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+											</Button>
+										</FormControl>
+									</PopoverTrigger>
+									<PopoverContent className="w-full p-0">
+										<Command>
+											<CommandInput placeholder="Search vehicle..." />
+											<CommandList>
+												<CommandEmpty>No vehicle found.</CommandEmpty>
+												<CommandGroup>
+													{vehicles.map((vehicle) => (
+														<CommandItem
+															value={vehicle}
+															key={vehicle}
+															onSelect={() => {
+																form.setValue('plate_number', vehicle);
+															}}
+														>
+															{vehicle}
+														</CommandItem>
+													))}
+												</CommandGroup>
+											</CommandList>
+										</Command>
+									</PopoverContent>
+								</Popover>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					{form.formState.errors.root && (
+						<div className="text-sm font-medium text-red-500">
+							{form.formState.errors.root.message}
+						</div>
+					)}
+					<Button className="p-1 w-full" disabled={isPending}>
+						{!isPending ? 'Continue' : <SpinnerMini />}
+					</Button>
+				</form>
+			</Form>
+		</div>
+	);
+}

@@ -1,5 +1,5 @@
 import Navigation from '@/features/dashboard/components/dashboard-nav';
-import Sidebar from '@/features/dashboard/components/sidebar';
+import Sidebar from '@/features/dashboard/components/Sidebar';
 import { ReactNode, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 

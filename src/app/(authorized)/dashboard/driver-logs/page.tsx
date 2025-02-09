@@ -1,4 +1,4 @@
-import QRCodeReader from '@/features/log-driver/components/qr-reader';
+import QRCodeReader from '@/features/logs/components/qr-reader';
 
 export default function DriverLogPage() {
 	return (

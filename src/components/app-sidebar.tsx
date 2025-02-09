@@ -46,7 +46,7 @@ const data = {
 		},
 		{
 			title: 'Driver Shift Logs',
-			url: '/dashboard/driver-log',
+			url: '/dashboard/driver-logs',
 			icon: FileClock,
 		},
 		{
@@ -57,7 +57,7 @@ const data = {
 			items: [
 				{
 					title: 'Tricycles',
-					url: '/dashboard/manage-vehicle',
+					url: '/dashboard/vehicles',
 				},
 				{
 					title: 'Documents',
@@ -77,7 +77,7 @@ const data = {
 			items: [
 				{
 					title: 'Drivers',
-					url: '#',
+					url: '/dashboard/drivers',
 				},
 			],
 		},

@@ -8,7 +8,7 @@ export const LogSchema = z.object({
 });
 
 export const NewLogSchema = z.object({
-	id: z.string().uuid(),
+	operator_id: z.string().uuid(),
 	driver_id: z.string().uuid(),
 	plate_number: z.string(),
 	driver_name: z.string(),

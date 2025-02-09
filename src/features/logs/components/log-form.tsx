@@ -84,12 +84,13 @@ export default function LogForm({ driver }: LogFormProps) {
 
 	const addLog = async (data: z.infer<typeof LogSchema>) => {
 		const response = await createNewLog(data);
-		if (response?.message) {
+		if (response.message) {
 			toast.success(response.message);
 			form.reset();
 		}
-		if (response?.error) {
+		if (response.error) {
 			toast.error(response.error);
+			return;
 		}
 	};
 
@@ -124,7 +125,7 @@ export default function LogForm({ driver }: LogFormProps) {
 												role="combobox"
 												className={cn(
 													'w-full justify-between',
-													!field.value && 'text-muted-foreground'
+													!field.value && 'text-muted-foreground',
 												)}
 											>
 												{field.value

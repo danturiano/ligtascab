@@ -1,16 +1,11 @@
 import supabase from '@/lib/supabase';
 import { Driver, Log } from '../schemas/logs';
 
-export async function getAllDrivers(): Promise<Driver[]> {
-	const { data: drivers, error } = await supabase.from('drivers').select('*');
-
-	if (error) {
-		console.error('Error fetching drivers:', error);
-		return []; // Ensure the function never returns null
-	}
-
-	return drivers ?? []; // Return drivers if not null, otherwise return an empty array
-}
+export type ApiResponse<T> = {
+	data?: T;
+	error?: string;
+	message?: string;
+};
 
 export async function getDriver(id: string): Promise<Driver> {
 	console.log(id);
@@ -23,6 +18,7 @@ export async function getDriver(id: string): Promise<Driver> {
 	if (error) {
 		console.error(error);
 		return {
+			status: '',
 			first_name: '',
 			id: '',
 			last_name: '',
@@ -50,14 +46,37 @@ export async function getAvailableVehicle(): Promise<string[]> {
 	return vehicles?.map((vehicle) => vehicle.plate_number) ?? [];
 }
 
-export async function createLog(newLog: Log) {
-	const { error } = await supabase
+export async function checkLog(newLog: Log): Promise<ApiResponse<any>> {
+	const { data, error } = await supabase
 		.from('driver_logs')
-		.insert([newLog])
-		.select();
+		.select('driver_id')
+		.eq('driver_id', newLog.driver_id);
 
 	if (error) {
-		console.error(error);
-		return error;
+		return { error: error.message };
 	}
+
+	if (data) {
+		return { error: 'Driver is currently active' };
+	}
+
+	return { data };
+}
+
+export async function createLog(newLog: Log): Promise<ApiResponse<Log>> {
+	const { data, error } = await supabase
+		.from('driver_logs')
+		.insert([newLog])
+		.select()
+		.single();
+
+	if (error) {
+		console.error('Error inserting log:', error);
+		return { error: error.message };
+	}
+
+	return {
+		data: data as Log,
+		message: 'Log created successfully',
+	};
 }

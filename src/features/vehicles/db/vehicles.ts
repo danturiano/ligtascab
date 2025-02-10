@@ -2,6 +2,7 @@
 
 import supabase from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
+import { cache } from 'react';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -15,7 +16,7 @@ export type Vehicle = {
 	status?: string;
 };
 
-export async function getAllVehicle(): Promise<Vehicle[]> {
+export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
 	const { data: vehicles, error } = await supabase.from('vehicles').select('*');
 
 	if (error) {
@@ -23,11 +24,11 @@ export async function getAllVehicle(): Promise<Vehicle[]> {
 		return []; // Ensure the function never returns null
 	}
 
-	return vehicles ?? []; // Return drivers if not null, otherwise return an empty array
-}
+	return vehicles ?? [];
+});
 
 export async function getVehicle(
-	registration_number: string
+	registration_number: string,
 ): Promise<Vehicle> {
 	const { data: vehicle, error } = await supabase
 		.from('vehicles')

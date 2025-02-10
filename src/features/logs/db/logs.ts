@@ -1,4 +1,5 @@
 import supabase from '@/lib/supabase';
+import { cache } from 'react';
 import { Driver, Log } from '../schemas/logs';
 
 export type ApiResponse<T> = {
@@ -7,8 +8,7 @@ export type ApiResponse<T> = {
 	message?: string;
 };
 
-export async function getDriver(id: string): Promise<Driver> {
-	console.log(id);
+export const getDriver = async (id: string): Promise<Driver> => {
 	const { data: driver, error } = await supabase
 		.from('drivers')
 		.select('*')
@@ -30,27 +30,28 @@ export async function getDriver(id: string): Promise<Driver> {
 	}
 
 	return driver;
-}
+};
 
-export async function getAvailableVehicle(): Promise<string[]> {
+export const getAvailableVehicle = cache(async (): Promise<string[]> => {
 	const { data: vehicles, error } = await supabase
 		.from('vehicles')
 		.select('plate_number')
 		.eq('status', 'inactive');
 
 	if (error) {
-		console.error('Error fetching drivers:', error);
-		return []; // Ensure the function never returns null
+		console.error('Error fetching vehicles:', error);
+		return [];
 	}
 
 	return vehicles?.map((vehicle) => vehicle.plate_number) ?? [];
-}
+});
 
-export async function checkLog(newLog: Log): Promise<ApiResponse<any>> {
+export const checkLog = async (newLog: Log): Promise<ApiResponse<unknown>> => {
 	const { data, error } = await supabase
 		.from('driver_logs')
 		.select('driver_id')
-		.eq('driver_id', newLog.driver_id);
+		.eq('driver_id', newLog.driver_id)
+		.maybeSingle();
 
 	if (error) {
 		return { error: error.message };
@@ -60,10 +61,10 @@ export async function checkLog(newLog: Log): Promise<ApiResponse<any>> {
 		return { error: 'Driver is currently active' };
 	}
 
-	return { data };
-}
+	return { data: null };
+};
 
-export async function createLog(newLog: Log): Promise<ApiResponse<Log>> {
+export const createLog = async (newLog: Log): Promise<ApiResponse<Log>> => {
 	const { data, error } = await supabase
 		.from('driver_logs')
 		.insert([newLog])
@@ -79,4 +80,4 @@ export async function createLog(newLog: Log): Promise<ApiResponse<Log>> {
 		data: data as Log,
 		message: 'Log created successfully',
 	};
-}
+};

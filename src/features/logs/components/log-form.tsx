@@ -42,11 +42,12 @@ type LogFormProps = {
 export default function LogForm({ driver }: LogFormProps) {
 	const [isPending, startTransition] = useTransition();
 	const [vehicles, setVehicles] = useState<string[]>([]);
+	const [open, setOpen] = useState(false);
 
 	const form = useForm<z.infer<typeof LogSchema>>({
 		resolver: zodResolver(LogSchema),
 		defaultValues: {
-			driver: {
+			driver: driver || {
 				first_name: '',
 				id: '',
 				last_name: '',
@@ -55,7 +56,7 @@ export default function LogForm({ driver }: LogFormProps) {
 				operator_id: '',
 				phone_number: '',
 			},
-			driver_name: '',
+			driver_name: driver ? `${driver.first_name} ${driver.last_name}` : '',
 			plate_number: '',
 		},
 	});
@@ -69,29 +70,31 @@ export default function LogForm({ driver }: LogFormProps) {
 	}, [driver, form]);
 
 	useEffect(() => {
+		const controller = new AbortController();
+
 		const fetchVehicles = async () => {
+			if (!open) return;
 			const availableVehicles = await getAvailableVehicle();
 			setVehicles(availableVehicles);
 		};
+
 		fetchVehicles();
-	}, []);
 
-	function onSubmit(data: z.infer<typeof LogSchema>) {
-		startTransition(() => {
-			addLog(data);
+		return () => controller.abort();
+	}, [open]);
+
+	const onSubmit = async (data: z.infer<typeof LogSchema>) => {
+		startTransition(async () => {
+			const response = await createNewLog(data);
+			if (response.message) {
+				toast.success(response.message);
+				form.reset();
+				setVehicles([]); // Clear vehicles cache
+			}
+			if (response.error) {
+				toast.error(response.error);
+			}
 		});
-	}
-
-	const addLog = async (data: z.infer<typeof LogSchema>) => {
-		const response = await createNewLog(data);
-		if (response.message) {
-			toast.success(response.message);
-			form.reset();
-		}
-		if (response.error) {
-			toast.error(response.error);
-			return;
-		}
 	};
 
 	return (
@@ -117,7 +120,7 @@ export default function LogForm({ driver }: LogFormProps) {
 						render={({ field }) => (
 							<FormItem className="flex flex-col w-full">
 								<FormLabel>Select Available Vehicle</FormLabel>
-								<Popover>
+								<Popover open={open} onOpenChange={setOpen}>
 									<PopoverTrigger asChild>
 										<FormControl>
 											<Button

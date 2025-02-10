@@ -1,7 +1,8 @@
 import { Driver } from '@/features/logs/schemas/logs';
 import supabase from '@/lib/supabase';
+import { cache } from 'react';
 
-export async function getAllDrivers(): Promise<Driver[]> {
+export const getAllDrivers = cache(async (): Promise<Driver[]> => {
 	const { data: drivers, error } = await supabase.from('drivers').select('*');
 
 	if (error) {
@@ -10,4 +11,4 @@ export async function getAllDrivers(): Promise<Driver[]> {
 	}
 
 	return drivers ?? []; // Return drivers if not null, otherwise return an empty array
-}
+});

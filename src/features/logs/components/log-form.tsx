@@ -24,6 +24,13 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronsUpDown } from 'lucide-react';
@@ -43,6 +50,8 @@ export default function LogForm({ driver }: LogFormProps) {
 	const [isPending, startTransition] = useTransition();
 	const [vehicles, setVehicles] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const [isTimeOut, setIsTimeOut] = useState(false);
 
 	const form = useForm<z.infer<typeof LogSchema>>({
 		resolver: zodResolver(LogSchema),
@@ -58,6 +67,7 @@ export default function LogForm({ driver }: LogFormProps) {
 			},
 			driver_name: driver ? `${driver.first_name} ${driver.last_name}` : '',
 			plate_number: '',
+			log_type: 'Time-in',
 		},
 	});
 
@@ -82,6 +92,8 @@ export default function LogForm({ driver }: LogFormProps) {
 
 		return () => controller.abort();
 	}, [open]);
+
+	const logType = form.watch('log_type');
 
 	const onSubmit = async (data: z.infer<typeof LogSchema>) => {
 		startTransition(async () => {
@@ -114,56 +126,97 @@ export default function LogForm({ driver }: LogFormProps) {
 							</FormItem>
 						)}
 					/>
-					<FormField
-						control={form.control}
-						name="plate_number"
-						render={({ field }) => (
-							<FormItem className="flex flex-col w-full">
-								<FormLabel>Select Available Vehicle</FormLabel>
-								<Popover open={open} onOpenChange={setOpen}>
-									<PopoverTrigger asChild>
+					<div className="flex gap-3 items-center justify-center">
+						<FormField
+							control={form.control}
+							name="plate_number"
+							render={({ field }) => (
+								<FormItem className="flex flex-col w-full mt-2">
+									<FormLabel className="mb-1">
+										Select Available Vehicle
+									</FormLabel>
+									<Popover open={open} onOpenChange={setOpen}>
+										<PopoverTrigger asChild>
+											<FormControl>
+												<Button
+													variant="outline"
+													disabled={logType === 'Time-out'}
+													role="combobox"
+													className={cn(
+														'w-full justify-between',
+														!field.value && 'text-muted-foreground',
+													)}
+												>
+													{field.value
+														? vehicles.find(
+																(vehicle) => vehicle === field.value,
+															)
+														: 'Select vehicle'}
+													<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+												</Button>
+											</FormControl>
+										</PopoverTrigger>
+										<PopoverContent>
+											<Command>
+												<CommandInput placeholder="Search vehicle..." />
+												<CommandList>
+													<CommandEmpty>No vehicle found.</CommandEmpty>
+													<CommandGroup>
+														{vehicles.map((vehicle) => (
+															<CommandItem
+																value={vehicle}
+																key={vehicle}
+																onSelect={() => {
+																	form.setValue('plate_number', vehicle);
+																}}
+															>
+																{vehicle}
+															</CommandItem>
+														))}
+													</CommandGroup>
+												</CommandList>
+											</Command>
+										</PopoverContent>
+									</Popover>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="log_type"
+							render={({ field }) => (
+								<FormItem className="w-full">
+									<FormLabel>Log Type</FormLabel>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
 										<FormControl>
-											<Button
-												variant="outline"
-												role="combobox"
-												className={cn(
-													'w-full justify-between',
-													!field.value && 'text-muted-foreground',
-												)}
-											>
-												{field.value
-													? vehicles.find((vehicle) => vehicle === field.value)
-													: 'Select vehicle'}
-												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-											</Button>
+											<SelectTrigger>
+												<SelectValue defaultValue={'Time-in'} />
+											</SelectTrigger>
 										</FormControl>
-									</PopoverTrigger>
-									<PopoverContent className="w-full p-0">
-										<Command className="md:w-[384px]">
-											<CommandInput placeholder="Search vehicle..." />
-											<CommandList>
-												<CommandEmpty>No vehicle found.</CommandEmpty>
-												<CommandGroup>
-													{vehicles.map((vehicle) => (
-														<CommandItem
-															value={vehicle}
-															key={vehicle}
-															onSelect={() => {
-																form.setValue('plate_number', vehicle);
-															}}
-														>
-															{vehicle}
-														</CommandItem>
-													))}
-												</CommandGroup>
-											</CommandList>
-										</Command>
-									</PopoverContent>
-								</Popover>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+										<SelectContent>
+											<SelectItem
+												value="Time-in"
+												onClick={() => setIsTimeOut(false)}
+											>
+												Time-in
+											</SelectItem>
+											<SelectItem
+												value="Time-out"
+												onClick={() => setIsTimeOut(true)}
+											>
+												Time-out
+											</SelectItem>
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
 					{form.formState.errors.root && (
 						<div className="text-sm font-medium text-red-500">
 							{form.formState.errors.root.message}

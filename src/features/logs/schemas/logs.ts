@@ -5,6 +5,7 @@ export const LogSchema = z.object({
 	driver: DriverSchema,
 	plate_number: z.string(),
 	driver_name: z.string(),
+	log_type: z.string(),
 });
 
 // export const NewLogSchema = z.object({
@@ -22,7 +23,7 @@ export type Log = {
 	driver_name: string;
 	type?: string;
 	id?: string;
-	plate_number: string;
+	plate_number?: string;
 };
 
 export type Driver = z.infer<typeof DriverSchema>;

@@ -32,30 +32,19 @@ export const getDriver = async (id: string): Promise<Driver> => {
 	return driver;
 };
 
-export const updateVehicleStatus = async (plate_number: string) => {
-	const { error } = await supabase
-		.from('vehicles')
-		.update({ status: 'active' })
-		.eq('plate_number', plate_number)
-		.select();
+export const getDriverPlateNumber = async (id: string) => {
+	const { data, error } = await supabase
+		.from('driver_logs')
+		.select('plate_number')
+		.eq('driver_id', id)
+		.single();
 
 	if (error) {
-		console.error('Error updating driver status:', error);
+		console.error('Error fetching driver plate number:', error);
 		return { error: error.message };
 	}
-};
 
-export const updateDriverStatus = async (id: string) => {
-	const { error } = await supabase
-		.from('drivers')
-		.update({ status: 'active' })
-		.eq('id', id)
-		.select();
-
-	if (error) {
-		console.error('Error updating driver status:', error);
-		return { error: error.message };
-	}
+	return data.plate_number;
 };
 
 export const getAvailableVehicle = cache(async (): Promise<string[]> => {
@@ -73,7 +62,10 @@ export const getAvailableVehicle = cache(async (): Promise<string[]> => {
 });
 
 export const getAllLogs = cache(async (): Promise<Log[]> => {
-	const { data: logs, error } = await supabase.from('driver_logs').select('*');
+	const { data: logs, error } = await supabase
+		.from('driver_logs')
+		.select('*')
+		.order('created_at', { ascending: false });
 
 	if (error) {
 		console.error(error);
@@ -99,6 +91,35 @@ export const checkLog = async (newLog: Log): Promise<ApiResponse<unknown>> => {
 	}
 
 	return { data: null };
+};
+
+export const updateVehicleStatus = async (
+	plate_number: string,
+	status: string,
+) => {
+	const { error } = await supabase
+		.from('vehicles')
+		.update({ status: status })
+		.eq('plate_number', plate_number)
+		.select();
+
+	if (error) {
+		console.error('Error updating driver status:', error);
+		return { error: error.message };
+	}
+};
+
+export const updateDriverStatus = async (id: string, status: string) => {
+	const { error } = await supabase
+		.from('drivers')
+		.update({ status: status })
+		.eq('id', id)
+		.select();
+
+	if (error) {
+		console.error('Error updating driver status:', error);
+		return { error: error.message };
+	}
 };
 
 export const createLog = async (newLog: Log): Promise<ApiResponse<Log>> => {

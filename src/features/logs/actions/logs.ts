@@ -1,10 +1,12 @@
 'use server';
 
 import { auth } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 import {
 	ApiResponse,
 	checkLog,
 	createLog,
+	getDriverPlateNumber,
 	updateDriverStatus,
 	updateVehicleStatus,
 } from '../db/logs';
@@ -41,10 +43,36 @@ export async function createNewLog(
 			driver_id: result.data.driver.id,
 			plate_number: result.data.plate_number,
 			driver_name: result.data.driver_name,
+			log_type: result.data.log_type,
 		};
+
+		const status = `${result.data.log_type === 'Time-in' ? 'active' : 'inactive'}`;
+
+		if (status === 'active') {
+			const existingLog = await checkLog(newLog);
+			if (existingLog.error || existingLog.data) {
+				return {
+					error: existingLog.error || 'Log already exists',
+				};
+			}
+			newLog.log_type = 'Time-in';
+		}
+
+		if (status === 'inactive') {
+			const driverPlateNumber = await getDriverPlateNumber(
+				result.data.driver.id,
+			);
+			newLog.plate_number = driverPlateNumber;
+		}
+
+		const logResult = await createLog(newLog);
+		if (logResult.error) {
+			return { error: logResult.error };
+		}
 
 		const setVehicleStatus = await updateVehicleStatus(
 			result.data.plate_number,
+			status,
 		);
 		if (setVehicleStatus?.error) {
 			return {
@@ -52,24 +80,17 @@ export async function createNewLog(
 			};
 		}
 
-		const setDriverStatus = await updateDriverStatus(result.data.driver.id);
+		const setDriverStatus = await updateDriverStatus(
+			result.data.driver.id,
+			status,
+		);
 		if (setDriverStatus?.error) {
 			return {
 				error: setDriverStatus.error || 'Cannot update driverr status',
 			};
 		}
 
-		const existingLog = await checkLog(newLog);
-		if (existingLog.error || existingLog.data) {
-			return {
-				error: existingLog.error || 'Log already exists',
-			};
-		}
-
-		const logResult = await createLog(newLog);
-		if (logResult.error) {
-			return { error: logResult.error };
-		}
+		revalidatePath('/dashboard/driver-logs', 'page');
 
 		return {
 			data: logResult.data,

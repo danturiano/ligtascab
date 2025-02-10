@@ -20,7 +20,7 @@ const QRCodeReader = () => {
 	};
 
 	return (
-		<div className="min-w-sm space-y-4">
+		<div className="min-w-sm space-y-4 mt-4">
 			<Card className="max-w-sm">
 				<div
 					className="relative w-full bg-gray-100"

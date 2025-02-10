@@ -71,7 +71,7 @@ export async function createNewLog(
 		}
 
 		const setVehicleStatus = await updateVehicleStatus(
-			result.data.plate_number,
+			newLog.plate_number,
 			status,
 		);
 		if (setVehicleStatus?.error) {

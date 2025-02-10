@@ -94,6 +94,9 @@ export default function LogForm({ driver }: LogFormProps) {
 	}, [open]);
 
 	const logType = form.watch('log_type');
+	if (logType === 'Time-out') {
+		form.setValue('plate_number', '');
+	}
 
 	const onSubmit = async (data: z.infer<typeof LogSchema>) => {
 		startTransition(async () => {

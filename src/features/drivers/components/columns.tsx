@@ -1,14 +1,31 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Driver } from '@/features/logs/schemas/logs';
 import GenerateQRCode from '@/features/vehicles/components/generate-qr';
+import { formatDate } from '@/lib/utils';
 import { ColumnDef } from '@tanstack/react-table';
+import { ArrowUpDown } from 'lucide-react';
 
 export const columns: ColumnDef<Driver>[] = [
 	{
 		accessorKey: 'status',
-		header: () => <div className="ml-4">Status</div>,
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center">
+					<p>Status</p>
+					<Button
+						variant="ghost"
+						size={'icon'}
+						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+						className="p-0 hover:bg-transparent"
+					>
+						<ArrowUpDown className="h-4 w-4" />
+					</Button>
+				</div>
+			);
+		},
 		cell: ({ row }) => {
 			const status = row.getValue('status') as string;
 			return (
@@ -35,6 +52,25 @@ export const columns: ColumnDef<Driver>[] = [
 	{
 		accessorKey: 'license_number',
 		header: 'License Number',
+	},
+	{
+		accessorKey: 'license_expiry',
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center">
+					<p>License Expiry</p>
+					<Button
+						variant="ghost"
+						size={'icon'}
+						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+						className="p-0 hover:bg-transparent"
+					>
+						<ArrowUpDown className="h-4 w-4" />
+					</Button>
+				</div>
+			);
+		},
+		cell: ({ row }) => <div>{formatDate(row.getValue('license_expiry'))}</div>,
 	},
 	{
 		accessorKey: 'phone_number',

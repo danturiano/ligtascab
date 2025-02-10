@@ -1,7 +1,13 @@
 'use server';
 
 import { auth } from '@/lib/auth';
-import { ApiResponse, checkLog, createLog } from '../db/logs';
+import {
+	ApiResponse,
+	checkLog,
+	createLog,
+	updateDriverStatus,
+	updateVehicleStatus,
+} from '../db/logs';
 import { Log, LogSchema } from '../schemas/logs';
 
 export async function createNewLog(
@@ -36,6 +42,22 @@ export async function createNewLog(
 			plate_number: result.data.plate_number,
 			driver_name: result.data.driver_name,
 		};
+
+		const setVehicleStatus = await updateVehicleStatus(
+			result.data.plate_number,
+		);
+		if (setVehicleStatus?.error) {
+			return {
+				error: setVehicleStatus.error || 'Cannot update vehicle status',
+			};
+		}
+
+		const setDriverStatus = await updateDriverStatus(result.data.driver.id);
+		if (setDriverStatus?.error) {
+			return {
+				error: setDriverStatus.error || 'Cannot update driverr status',
+			};
+		}
 
 		const existingLog = await checkLog(newLog);
 		if (existingLog.error || existingLog.data) {

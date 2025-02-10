@@ -17,7 +17,10 @@ export type Vehicle = {
 };
 
 export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
-	const { data: vehicles, error } = await supabase.from('vehicles').select('*');
+	const { data: vehicles, error } = await supabase
+		.from('vehicles')
+		.select('*')
+		.order('status', { ascending: true });
 
 	if (error) {
 		console.error('Error fetching drivers:', error);

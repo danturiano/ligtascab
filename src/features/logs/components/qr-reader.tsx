@@ -22,40 +22,38 @@ const QRCodeReader = () => {
 	return (
 		<div className="min-w-sm space-y-4">
 			<Card className="max-w-sm">
-				<div className="space-y-4 w-full">
-					<div
-						className="relative w-full bg-gray-100"
-						style={{ minHeight: '300px' }}
-					>
-						<QrReader
-							onResult={async (result) => {
-								if (result) {
-									const scannedQR = result.getText();
-									fetchDriver(scannedQR);
-								}
-							}}
-							constraints={{
-								facingMode: 'environment',
-								width: { min: 640, ideal: 1280, max: 1920 },
-								height: { min: 480, ideal: 720, max: 1080 },
-							}}
-							videoId="qr-video"
-							className="w-full h-full"
-							videoContainerStyle={{
-								position: 'relative',
-								width: '100%',
-								minHeight: '300px',
-							}}
-							videoStyle={{
-								width: '100%',
-								height: '100%',
-								objectFit: 'cover',
-								position: 'absolute',
-								top: 0,
-								left: 0,
-							}}
-						/>
-					</div>
+				<div
+					className="relative w-full bg-gray-100"
+					style={{ minHeight: '300px' }}
+				>
+					<QrReader
+						onResult={async (result) => {
+							if (result) {
+								const scannedQR = result.getText();
+								fetchDriver(scannedQR);
+							}
+						}}
+						constraints={{
+							facingMode: 'environment',
+							width: { min: 640, ideal: 1280, max: 1920 },
+							height: { min: 480, ideal: 720, max: 1080 },
+						}}
+						videoId="qr-video"
+						className="w-full h-full"
+						videoContainerStyle={{
+							position: 'relative',
+							width: '100%',
+							minHeight: '300px',
+						}}
+						videoStyle={{
+							width: '100%',
+							height: '100%',
+							objectFit: 'cover',
+							position: 'absolute',
+							top: 0,
+							left: 0,
+						}}
+					/>
 				</div>
 			</Card>
 			<LogForm driver={driver} />

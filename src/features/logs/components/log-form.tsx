@@ -98,7 +98,7 @@ export default function LogForm({ driver }: LogFormProps) {
 	};
 
 	return (
-		<div className="w-[384px]">
+		<div className="md:w-[384px]">
 			<Form {...form}>
 				<form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
 					<FormField
@@ -139,7 +139,7 @@ export default function LogForm({ driver }: LogFormProps) {
 										</FormControl>
 									</PopoverTrigger>
 									<PopoverContent className="w-full p-0">
-										<Command>
+										<Command className="md:w-[384px]">
 											<CommandInput placeholder="Search vehicle..." />
 											<CommandList>
 												<CommandEmpty>No vehicle found.</CommandEmpty>

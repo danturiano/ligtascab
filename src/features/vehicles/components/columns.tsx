@@ -12,7 +12,21 @@ import { VehicleDelete } from './vehicle-delete';
 export const columns: ColumnDef<Vehicle>[] = [
 	{
 		accessorKey: 'status',
-		header: () => <div className="ml-4">Status</div>,
+		header: ({ column }) => {
+			return (
+				<div className="flex items-center">
+					<p>Status</p>
+					<Button
+						variant="ghost"
+						size={'icon'}
+						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+						className="p-0 hover:bg-transparent"
+					>
+						<ArrowUpDown className="h-4 w-4" />
+					</Button>
+				</div>
+			);
+		},
 		cell: ({ row }) => {
 			const status = row.getValue('status') as string;
 			return (

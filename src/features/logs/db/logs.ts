@@ -32,6 +32,32 @@ export const getDriver = async (id: string): Promise<Driver> => {
 	return driver;
 };
 
+export const updateVehicleStatus = async (plate_number: string) => {
+	const { error } = await supabase
+		.from('vehicles')
+		.update({ status: 'active' })
+		.eq('plate_number', plate_number)
+		.select();
+
+	if (error) {
+		console.error('Error updating driver status:', error);
+		return { error: error.message };
+	}
+};
+
+export const updateDriverStatus = async (id: string) => {
+	const { error } = await supabase
+		.from('drivers')
+		.update({ status: 'active' })
+		.eq('id', id)
+		.select();
+
+	if (error) {
+		console.error('Error updating driver status:', error);
+		return { error: error.message };
+	}
+};
+
 export const getAvailableVehicle = cache(async (): Promise<string[]> => {
 	const { data: vehicles, error } = await supabase
 		.from('vehicles')
@@ -44,6 +70,17 @@ export const getAvailableVehicle = cache(async (): Promise<string[]> => {
 	}
 
 	return vehicles?.map((vehicle) => vehicle.plate_number) ?? [];
+});
+
+export const getAllLogs = cache(async (): Promise<Log[]> => {
+	const { data: logs, error } = await supabase.from('driver_logs').select('*');
+
+	if (error) {
+		console.error(error);
+		return [];
+	}
+
+	return logs ?? [];
 });
 
 export const checkLog = async (newLog: Log): Promise<ApiResponse<unknown>> => {

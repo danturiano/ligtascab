@@ -16,7 +16,7 @@ export function saltAndHashPassword(password: string): string {
 // Function to verify password (for login)
 export function verifyPassword(
 	inputPassword: string,
-	storedHashString: string
+	storedHashString: string,
 ): boolean {
 	try {
 		const [salt, storedHash] = storedHashString.split(':');
@@ -27,7 +27,7 @@ export function verifyPassword(
 			salt,
 			1000,
 			64,
-			'sha512'
+			'sha512',
 		).toString('hex');
 
 		// Compare the generated hash with stored hash
@@ -60,3 +60,23 @@ export function formatDate(dateString: string): string {
 
 	return date.toLocaleDateString('en-US', options);
 }
+
+export function formatDateTime(timestamp: string): string {
+	const date = new Date(timestamp);
+
+	// Format options
+	const options: Intl.DateTimeFormatOptions = {
+		month: '2-digit',
+		day: '2-digit',
+		year: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: true,
+	};
+
+	return date.toLocaleString('en-US', options);
+}
+
+// Example usage
+const formattedDate = formatDateTime('2025-02-09 08:53:31.831182+00');
+console.log(formattedDate);

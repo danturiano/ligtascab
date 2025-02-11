@@ -1,6 +1,6 @@
 import Logo from './brand-logo';
 import NavUser from './nav-user';
-import Notification from './Notification';
+import NotificationDashboard from './notification';
 import SearchBar from './search-bar';
 
 export default function Navigation() {
@@ -9,7 +9,7 @@ export default function Navigation() {
 			<Logo />
 			<div className="flex-1 flex items-center justify-between">
 				<div className="flex items-center gap-2">
-					<Notification />
+					<NotificationDashboard />
 					<SearchBar />
 				</div>
 				<div>

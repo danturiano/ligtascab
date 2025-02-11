@@ -1,3 +1,3 @@
-export default function Spinner() {
+export default function SpinnerLoad() {
 	return <div className="spinner"></div>;
 }

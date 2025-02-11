@@ -1,9 +1,9 @@
-import Spinner from '@/components/spinner';
+import SpinnerLoad from '@/components/spinner-load';
 
 export default function loading() {
 	return (
 		<div>
-			<Spinner />
+			<SpinnerLoad />
 		</div>
 	);
 }

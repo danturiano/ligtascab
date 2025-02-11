@@ -1,4 +1,4 @@
-import Footer from '@/features/account-setup/components/Footer';
+import Footer from '@/features/account-setup/components/footer';
 import { Toaster } from 'react-hot-toast';
 
 export default async function SetupLayout({

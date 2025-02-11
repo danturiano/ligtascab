@@ -141,3 +141,30 @@ export const checkDriverStatus = async (id: string): Promise<boolean> => {
 
   return true;
 };
+
+interface PaginationParams {
+  from: number;
+  to: number;
+}
+
+interface PaginatedResponse<T> {
+  data: T[];
+  count: number;
+}
+
+export const getPaginatedLogs = cache(
+  async ({ from, to }: PaginationParams): Promise<PaginatedResponse<Log>> => {
+    const { data, error, count } = await supabase
+      .from("driver_logs")
+      .select("*", { count: "exact" })
+      .range(from, to)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return {
+      data: data || [],
+      count: count || 0,
+    };
+  },
+);

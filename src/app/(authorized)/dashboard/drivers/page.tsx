@@ -1,14 +1,64 @@
-import { columns } from '@/features/drivers/components/columns';
-import { DataTable } from '@/features/drivers/components/data-table';
-import { getAllDrivers } from '@/features/drivers/db/drivers';
-import React from 'react';
+"use client";
 
-export default async function DriverPage() {
-	const drivers = await getAllDrivers();
+import { Skeleton } from "@/components/ui/skeleton";
+import { columns } from "@/features/drivers/components/columns";
+import { getPaginatedDrivers } from "@/features/drivers/db/drivers";
+import { Driver } from "@/features/logs/schemas/logs";
+import { ColumnDef } from "@tanstack/react-table";
+import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
 
-	return (
-		<div>
-			<DataTable data={drivers} columns={columns} />
-		</div>
-	);
+const DataTable = dynamic<{
+  data: Driver[];
+  columns: ColumnDef<Driver>[];
+  pageCount: number;
+  onPaginationChange: (pagination: {
+    pageIndex: number;
+    pageSize: number;
+  }) => void;
+}>(
+  () =>
+    import("@/features/drivers/components/data-table").then(
+      (mod) => mod.DataTable,
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="w-full min-h-[350px] rounded-xl" />,
+  },
+);
+
+export default function DriverPage() {
+  const [data, setData] = useState<Driver[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 7,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const from = pagination.pageIndex * pagination.pageSize;
+      const to = from + pagination.pageSize - 1;
+
+      try {
+        const response = await getPaginatedDrivers({ from, to });
+        setData(response.data);
+        setTotalCount(response.count);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+      }
+    };
+
+    fetchData();
+  }, [pagination]);
+  return (
+    <div>
+      <DataTable
+        data={data}
+        columns={columns}
+        pageCount={Math.ceil(totalCount / pagination.pageSize)}
+        onPaginationChange={setPagination}
+      />
+    </div>
+  );
 }

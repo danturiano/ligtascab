@@ -1,3 +1,5 @@
+"use server";
+
 import supabase from "@/lib/supabase";
 import { cache } from "react";
 import { Driver, Log } from "../schemas/logs";

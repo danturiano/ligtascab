@@ -2,6 +2,7 @@
 
 import SpinnerMini from "@/components/spinner-mini";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -20,20 +21,11 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import dynamic from "next/dynamic";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { z } from "zod";
 import { registerVehicle } from "../actions/vehicles";
 import { VehicleSchema } from "../schemas/vehicles";
-
-const Calendar = dynamic(
-  () => import("@/components/ui/calendar").then((mod) => mod.Calendar),
-  {
-    ssr: false,
-  },
-);
 
 export default function VehicleForm() {
   const [isPending, startTransition] = useTransition();
@@ -48,6 +40,7 @@ export default function VehicleForm() {
 
   function onSubmit(data: z.infer<typeof VehicleSchema>) {
     startTransition(async () => {
+      const { toast } = await import("react-hot-toast");
       const response = await registerVehicle(data);
       if (response?.message) {
         toast.success(response.message);

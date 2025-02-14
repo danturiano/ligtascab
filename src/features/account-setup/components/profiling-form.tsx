@@ -19,7 +19,7 @@ import { redirect } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { updateProfile } from "../db/setup";
+import { updateProfile } from "../actions/setup";
 import { ProfileSchema } from "../schemas/setup";
 
 export default function ProfilingForm() {

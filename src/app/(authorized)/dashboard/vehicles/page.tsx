@@ -31,7 +31,7 @@ export default function VehiclePage() {
   const [totalCount, setTotalCount] = useState(0);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 7,
   });
 
   useEffect(() => {

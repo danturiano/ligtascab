@@ -1,3 +1,38 @@
+"use server";
+
+import { updateUser } from "../db/setup";
+import { ProfileSchema } from "../schemas/setup";
+
+export async function updateProfile(User: unknown) {
+  const result = ProfileSchema.safeParse(User);
+
+  if (!result.success) {
+    let errorMessage = "";
+
+    result.error.issues.forEach((issue) => {
+      errorMessage = errorMessage + issue.path[0] + ": " + issue.message + ". ";
+    });
+
+    return {
+      error: errorMessage,
+    };
+  }
+
+  const userProfile = {
+    first_name: result.data.first_name,
+    last_name: result.data.last_name,
+    email: result.data.email,
+    subscribe_newsletter: result.data.subscribe,
+    isNewUser: false,
+  };
+
+  await updateUser(userProfile);
+
+  if (result.success) {
+    return { message: "Success!" };
+  }
+}
+
 // type UploadProps = {
 // 	file: File;
 // 	bucket: string;

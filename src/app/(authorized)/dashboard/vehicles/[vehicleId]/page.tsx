@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 export default async function page({
-	params,
+  params,
 }: {
-	params: Promise<{ vehicleId: string }>;
+  params: Promise<{ vehicleId: string }>;
 }) {
-	const vehicleId = (await params).vehicleId;
-	return <div>{vehicleId}</div>;
+  const vehicleId = (await params).vehicleId;
+  return <div>{vehicleId}</div>;
 }

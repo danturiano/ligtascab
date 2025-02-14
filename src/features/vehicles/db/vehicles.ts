@@ -1,11 +1,7 @@
-"use server";
-
 import supabase from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Vehicle = {
   id?: string;
   operator_id?: string;

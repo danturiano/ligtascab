@@ -53,7 +53,7 @@ export const VehicleDelete = ({ id }: { id: string }) => {
             className="w-full"
             variant={"outline"}
             size={"sm"}
-            onClick={() => router.push(`/dashboard/manage-vehicle/${id}`)}
+            onClick={() => router.push(`/dashboard/vehicles/${id}`)}
           >
             View Vehicle
           </Button>

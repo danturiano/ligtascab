@@ -31,8 +31,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
+import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
-import { AddVehicle } from "./add-vehicle";
+
+const AddVehicle = dynamic(
+  () => import("./add-vehicle").then((mod) => mod.AddVehicle),
+  { loading: () => <p>loading</p>, ssr: false },
+);
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

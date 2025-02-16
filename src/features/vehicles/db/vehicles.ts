@@ -12,6 +12,18 @@ export type Vehicle = {
   status?: string;
 };
 
+export const isVehicleRegistered = async ( plate_number: string,
+  registration_number: string) => {
+    const vehicles = await getAllVehicle();
+    const isRegistered = vehicles.some(
+      (vehicle) =>
+        vehicle.plate_number === plate_number ||
+        vehicle.registration_number === registration_number,
+    );
+
+    return isRegistered;
+}
+
 export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
   const { data: vehicles, error } = await supabase
     .from("vehicles")
@@ -25,6 +37,7 @@ export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
 
   return vehicles ?? [];
 });
+
 export async function getVehicle(
   registration_number: string,
 ): Promise<Vehicle> {
@@ -60,7 +73,7 @@ export async function deleteVehicle(id: string) {
     throw new Error("cannot delete vehicle");
   }
 
-  revalidatePath("/dashboard/manage-vehicle");
+  revalidatePath("/dashboard/vehicles");
 
   return { error };
 }

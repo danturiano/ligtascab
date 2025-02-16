@@ -8,15 +8,6 @@ export const LogSchema = z.object({
 	log_type: z.string(),
 });
 
-// export const NewLogSchema = z.object({
-// 	operator_id: z.string().uuid(),
-// 	driver_id: z.string().uuid(),
-// 	plate_number: z.string(),
-// 	driver_name: z.string(),
-// 	created_at: z.string().optional(),
-// 	id: z.string().optional(),
-// });
-
 export type Log = {
 	created_at?: string;
 	driver_id: string;
@@ -25,5 +16,3 @@ export type Log = {
 	id?: string;
 	plate_number?: string;
 };
-
-export type Driver = z.infer<typeof DriverSchema>;

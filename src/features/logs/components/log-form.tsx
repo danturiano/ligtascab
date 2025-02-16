@@ -40,7 +40,8 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { createNewLog } from "../actions/logs";
 import { getAvailableVehicle } from "../db/logs";
-import { Driver, LogSchema } from "../schemas/logs";
+import { LogSchema } from "../schemas/logs";
+import { Driver } from "@/features/drivers/schemas/drivers";
 
 type LogFormProps = {
   driver: Driver | null;
@@ -56,11 +57,11 @@ export default function LogForm({ driver }: LogFormProps) {
   const form = useForm<z.infer<typeof LogSchema>>({
     resolver: zodResolver(LogSchema),
     defaultValues: {
-      driver: driver || {
+      driver: {
         first_name: "",
         id: "",
         last_name: "",
-        license_expiry: "",
+        license_expiry: null,
         license_number: "",
         operator_id: "",
         phone_number: "",

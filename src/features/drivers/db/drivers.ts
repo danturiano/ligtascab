@@ -1,19 +1,5 @@
-import { Driver } from "@/features/logs/schemas/logs";
 import supabase from "@/lib/supabase";
-
-// export const getAllDrivers = cache(async (): Promise<Driver[]> => {
-//   const { data: drivers, error } = await supabase
-//     .from("drivers")
-//     .select("*")
-//     .order("status", { ascending: true });
-
-//   if (error) {
-//     console.error("Error fetching drivers:", error);
-//     return []; // Ensure the function never returns null
-//   }
-
-//   return drivers ?? []; // Return drivers if not null, otherwise return an empty array
-// });
+import { cache } from "react";
 
 interface PaginationParams {
   from: number;
@@ -24,6 +10,15 @@ interface PaginatedResponse<T> {
   data: T[];
   count: number;
 }
+
+type Driver = {
+  license_expiry: string;
+  license_number: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  operator_id: string | undefined;
+};
 
 export const getPaginatedDrivers = async ({
   from,
@@ -41,4 +36,35 @@ export const getPaginatedDrivers = async ({
     data: data || [],
     count: count || 0,
   };
+};
+
+export const getAllDrivers = cache(async (): Promise<Driver[]> => {
+  const { data: vehicles, error } = await supabase.from("drivers").select("*");
+
+  if (error) {
+    console.error("Error fetching drivers:", error);
+    return []; // Ensure the function never returns null
+  }
+
+  return vehicles ?? [];
+});
+
+export const createDriver = async (newDriver: Driver) => {
+  const { error } = await supabase.from("drivers").insert([newDriver]);
+
+  if (error) {
+    console.error("Error creating driver:", error);
+    return false;
+  }
+
+  return true;
+};
+
+export const isDriverRegistered = async (license_number: string) => {
+  const vehicles = await getAllDrivers();
+  const isRegistered = vehicles.some(
+    (driver) => driver.license_number === license_number
+  );
+
+  return isRegistered;
 };

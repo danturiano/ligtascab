@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
 import React, { useEffect } from "react";
+import { AddDriver } from "./add-driver";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -99,6 +100,7 @@ export function DataTable<TData, TValue>({
               }
               className="max-w-sm"
             />
+            <AddDriver/>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -37,7 +37,7 @@ export async function createNewLog(DriverLog: unknown) {
 
     const log = {
       operator_id: session?.user.id as string,
-      driver_id: result.data.driver.id,
+      driver_id: result.data.driver.id as string,
       plate_number: result.data.plate_number,
       driver_name: result.data.driver_name,
       log_type: result.data.log_type,

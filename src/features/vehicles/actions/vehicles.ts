@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { createVehicle, isVehicleRegistered } from "../db/vehicles";
 import { VehicleSchema } from "../schemas/vehicles";
+import { createClient } from "@/supabase/server";
 
 export async function registerVehicle(Vehicle: unknown) {
   const result = VehicleSchema.safeParse(Vehicle);
@@ -29,7 +30,13 @@ export async function registerVehicle(Vehicle: unknown) {
     return { error: "Vehicle is already registered." };
   }
 
-  const session = await auth();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
   const date = result.data.registration_expiry.toString();
   const expiryDate = formatDate(date);
 
@@ -37,7 +44,7 @@ export async function registerVehicle(Vehicle: unknown) {
     registration_expiry: expiryDate,
     registration_number: result.data.registration_number,
     plate_number: result.data.plate_number,
-    operator_id: session?.user.id,
+    operator_id: user.id,
   };
 
   await createVehicle(newVehicle);

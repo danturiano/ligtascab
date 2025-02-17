@@ -1,16 +1,9 @@
 import BrandLogo from "@/components/brand-logo";
 import ProfilingForm from "@/features/account-setup/components/profiling-form";
-import { isNewUser } from "@/services/data-service";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import dashboard from "/public/dashboard-ex.svg";
 
 export default async function Page() {
-  const newUser = await isNewUser();
-  if (!newUser) {
-    redirect("/dashboard");
-  }
-
   return (
     <div className="flex flex-col gap-4 items-center">
       <BrandLogo />

@@ -1,3 +1,5 @@
+import { createClient } from "@/supabase/client";
+
 type UserUpdate = {
   first_name: string;
   last_name: string;
@@ -7,10 +9,13 @@ type UserUpdate = {
   image?: string;
 };
 
-export async function updateUser(user: UserUpdate) {
-  const session = await auth();
+export async function updateUser(userr: UserUpdate) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const phone_number = session?.user.phone_number as string;
+  const phone_number = user?.phone as string;
 
   const { data, error } = await supabase
     .from("users")

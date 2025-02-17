@@ -12,11 +12,12 @@ interface PaginatedResponse<T> {
   count: number;
 }
 
+const supabase = createClient();
+
 export const getPaginatedDrivers = async ({
   from,
   to,
 }: PaginationParams): Promise<PaginatedResponse<Driver>> => {
-  const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -36,7 +37,6 @@ export const getPaginatedDrivers = async ({
 };
 
 export const getAllDrivers = cache(async (): Promise<Driver[]> => {
-  const supabase = createClient();
   const { data: vehicles, error } = await supabase.from("drivers").select("*");
 
   if (error) {
@@ -48,7 +48,6 @@ export const getAllDrivers = cache(async (): Promise<Driver[]> => {
 });
 
 export const createDriver = async (newDriver: Driver) => {
-  const supabase = createClient();
   const { error } = await supabase.from("drivers").insert([newDriver]);
 
   if (error) {

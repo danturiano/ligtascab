@@ -1,13 +1,15 @@
-import supabase from "@/lib/supabase";
 import { cache } from "react";
 import { Log } from "../schemas/logs";
 import { Driver } from "@/features/drivers/schemas/drivers";
+import { createClient } from "@/supabase/client";
 
 export type ApiResponse<T> = {
   data?: T;
   error?: string;
   message?: string;
 };
+
+const supabase = createClient();
 
 export const getDriver = async (id: string): Promise<Driver> => {
   const { data: driver, error } = await supabase
@@ -79,7 +81,7 @@ export const getAllLogs = cache(async (): Promise<Log[]> => {
 
 export const updateVehicleStatus = async (
   plate_number: string,
-  status: string
+  status: string,
 ) => {
   const { error } = await supabase
     .from("vehicles")
@@ -97,7 +99,7 @@ export const updateVehicleStatus = async (
 
 export const updateDriverStatus = async (
   id: string,
-  status: string
+  status: string,
 ): Promise<boolean> => {
   const { error } = await supabase
     .from("drivers")
@@ -167,5 +169,5 @@ export const getPaginatedLogs = cache(
       data: data || [],
       count: count || 0,
     };
-  }
+  },
 );

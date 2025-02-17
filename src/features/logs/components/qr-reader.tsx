@@ -4,8 +4,8 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { getDriver } from "../db/logs";
-import { Driver } from "../schemas/logs";
 import LogForm from "./log-form";
+import { Driver } from "@/features/drivers/schemas/drivers";
 
 const QRCodeReader = () => {
   const [driver, setDriver] = useState<Driver | null>(null);

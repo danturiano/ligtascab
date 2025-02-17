@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import {
   checkDriverStatus,
@@ -10,11 +9,15 @@ import {
   updateVehicleStatus,
 } from "../db/logs";
 import { LogSchema } from "../schemas/logs";
+import { createClient } from "@/supabase/server";
 
 export async function createNewLog(DriverLog: unknown) {
+  const supabase = await createClient();
   try {
-    const session = await auth();
-    if (!session?.user.id) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.id) {
       return {
         error: "User not authenticated",
       };
@@ -36,7 +39,7 @@ export async function createNewLog(DriverLog: unknown) {
     }
 
     const log = {
-      operator_id: session?.user.id as string,
+      operator_id: user.id as string,
       driver_id: result.data.driver.id as string,
       plate_number: result.data.plate_number,
       driver_name: result.data.driver_name,

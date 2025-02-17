@@ -1,4 +1,4 @@
-import supabase from "@/lib/supabase";
+import { createClient } from "@/supabase/client";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
@@ -12,17 +12,21 @@ export type Vehicle = {
   status?: string;
 };
 
-export const isVehicleRegistered = async ( plate_number: string,
-  registration_number: string) => {
-    const vehicles = await getAllVehicle();
-    const isRegistered = vehicles.some(
-      (vehicle) =>
-        vehicle.plate_number === plate_number ||
-        vehicle.registration_number === registration_number,
-    );
+const supabase = createClient();
 
-    return isRegistered;
-}
+export const isVehicleRegistered = async (
+  plate_number: string,
+  registration_number: string,
+) => {
+  const vehicles = await getAllVehicle();
+  const isRegistered = vehicles.some(
+    (vehicle) =>
+      vehicle.plate_number === plate_number ||
+      vehicle.registration_number === registration_number,
+  );
+
+  return isRegistered;
+};
 
 export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
   const { data: vehicles, error } = await supabase

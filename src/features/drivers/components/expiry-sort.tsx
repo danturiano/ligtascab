@@ -8,13 +8,13 @@ export default function ExpirySort({
 }: {
   column: Column<
     {
-      id: string;
-      status: string;
+      id?: string | undefined;
+      status?: string | undefined;
       first_name: string;
       last_name: string;
-      license_expiry: string;
+      license_expiry: Date | null;
       license_number: string;
-      operator_id: string;
+      operator_id?: string | undefined;
       phone_number: string;
     },
     unknown

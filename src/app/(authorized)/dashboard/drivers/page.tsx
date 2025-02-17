@@ -3,7 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { columns } from "@/features/drivers/components/columns";
 import { getPaginatedDrivers } from "@/features/drivers/db/drivers";
-import { Driver } from "@/features/logs/schemas/logs";
+import { Driver } from "@/features/drivers/schemas/drivers";
 import { ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";

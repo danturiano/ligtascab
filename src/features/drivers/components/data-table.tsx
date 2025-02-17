@@ -78,6 +78,7 @@ export function DataTable<TData, TValue>({
     onPaginationChange: setPagination,
     manualPagination: true,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
@@ -100,7 +101,7 @@ export function DataTable<TData, TValue>({
               }
               className="max-w-sm"
             />
-            <AddDriver/>
+            <AddDriver />
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

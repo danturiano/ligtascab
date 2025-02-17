@@ -1,5 +1,6 @@
 import supabase from "@/lib/supabase";
 import { cache } from "react";
+import { Driver } from "../schemas/drivers";
 
 interface PaginationParams {
   from: number;
@@ -10,15 +11,6 @@ interface PaginatedResponse<T> {
   data: T[];
   count: number;
 }
-
-type Driver = {
-  license_expiry: string;
-  license_number: string;
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  operator_id: string | undefined;
-};
 
 export const getPaginatedDrivers = async ({
   from,
@@ -63,7 +55,7 @@ export const createDriver = async (newDriver: Driver) => {
 export const isDriverRegistered = async (license_number: string) => {
   const vehicles = await getAllDrivers();
   const isRegistered = vehicles.some(
-    (driver) => driver.license_number === license_number
+    (driver) => driver.license_number === license_number,
   );
 
   return isRegistered;

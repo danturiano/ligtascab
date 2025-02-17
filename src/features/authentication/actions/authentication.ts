@@ -1,9 +1,6 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
-import { saltAndHashPassword } from "@/lib/utils";
-import { getUser } from "@/services/data-service";
-import { createUser } from "../db/authentication";
+import { createClient } from "@/supabase/server";
 import { CredentialsSchema, UserSchema } from "../schemas/authentication";
 
 export async function signInWithCredentials(User: unknown) {
@@ -21,22 +18,18 @@ export async function signInWithCredentials(User: unknown) {
     };
   }
 
-  try {
-    const response = await signIn("credentials", {
-      redirect: false,
-      callback: "/",
-      phone_number: result.data.phone_number,
-      password: result.data.password,
-    });
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({
+    phone: result.data.phone_number,
+    password: result.data.password,
+  });
 
-    if (response?.error) {
-      throw new Error(response.error.message);
-    }
-
-    return { data: response };
-  } catch (error) {
-    return { error: (error as Error).message };
+  if (error) {
+    console.error(error);
+    return { error: error };
   }
+
+  return { message: "Login" };
 }
 
 export async function register(User: unknown) {
@@ -54,32 +47,26 @@ export async function register(User: unknown) {
     };
   }
 
-  const convertedNumber = result.data.phone_number.replace(/^\+63/, "0");
+  const supabase = await createClient();
 
-  const user = await getUser(convertedNumber);
+  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    phone: result.data.phone_number,
+    password: result.data.password,
+  });
+  if (signUpError) {
+    console.log(signUpError);
+    return { error: signUpError.message };
+  }
+  // Check if user_data entry exists and create i
+  const { error: insertError } = await supabase
+    .from("users")
+    .insert({ user_id: signUpData?.user?.id });
 
-  if (user) {
-    return {
-      error: "Phone number already used.",
-    };
+  if (insertError) {
+    console.error("Error creating user_data entry:", insertError);
+    return { error: "Cannot create account" };
+    // Consider how you want to handle this error
   }
 
-  if (result.data.password !== result.data.confirm_password) {
-    return {
-      error: "Password does not match",
-    };
-  }
-
-  const pwHash = await saltAndHashPassword(result.data.password);
-
-  const newUser = {
-    phone_number: convertedNumber,
-    password: pwHash,
-  };
-
-  await createUser(newUser);
-
-  if (result.success) {
-    return { message: "Account created sucessfully" };
-  }
+  return { message: "Account created sucessfully" };
 }

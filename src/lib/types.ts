@@ -78,21 +78,27 @@ export type Database = {
           created_at: string
           driver_id: string | null
           driver_name: string | null
-          id: string
+          id: number
+          log_type: Database["public"]["Enums"]["log_type"]
+          operator_id: string | null
           plate_number: string | null
         }
         Insert: {
           created_at?: string
           driver_id?: string | null
           driver_name?: string | null
-          id?: string
+          id?: number
+          log_type?: Database["public"]["Enums"]["log_type"]
+          operator_id?: string | null
           plate_number?: string | null
         }
         Update: {
           created_at?: string
           driver_id?: string | null
           driver_name?: string | null
-          id?: string
+          id?: number
+          log_type?: Database["public"]["Enums"]["log_type"]
+          operator_id?: string | null
           plate_number?: string | null
         }
         Relationships: [
@@ -101,13 +107,6 @@ export type Database = {
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "drivers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "driver_logs_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
@@ -155,53 +154,29 @@ export type Database = {
             foreignKeyName: "drivers_operator_id_fkey"
             columns: ["operator_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "operators"
             referencedColumns: ["id"]
           },
         ]
       }
-      users: {
+      operators: {
         Row: {
           created_at: string
-          email: string | null
           first_name: string | null
           id: string
-          image: string | null
-          isNewUser: boolean
-          last_name: string | null
-          password: string | null
-          phone_number: string
-          role: Database["public"]["Enums"]["role"]
-          subscribe_newsletter: boolean
-          supabase_id: string | null
+          phone: string | null
         }
         Insert: {
           created_at?: string
-          email?: string | null
           first_name?: string | null
-          id?: string
-          image?: string | null
-          isNewUser?: boolean
-          last_name?: string | null
-          password?: string | null
-          phone_number: string
-          role?: Database["public"]["Enums"]["role"]
-          subscribe_newsletter?: boolean
-          supabase_id?: string | null
+          id: string
+          phone?: string | null
         }
         Update: {
           created_at?: string
-          email?: string | null
           first_name?: string | null
           id?: string
-          image?: string | null
-          isNewUser?: boolean
-          last_name?: string | null
-          password?: string | null
-          phone_number?: string
-          role?: Database["public"]["Enums"]["role"]
-          subscribe_newsletter?: boolean
-          supabase_id?: string | null
+          phone?: string | null
         }
         Relationships: []
       }
@@ -275,15 +250,7 @@ export type Database = {
           registration_number?: string
           status?: Database["public"]["Enums"]["status"]
         }
-        Relationships: [
-          {
-            foreignKeyName: "vehicles_operator_id_fkey"
-            columns: ["operator_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -293,6 +260,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      log_type: "Time-in" | "Time-out"
       payment_status: "paid" | "pending" | "overdue"
       role: "admin" | "operator"
       status: "active" | "inactive" | "maintenance"

@@ -1,15 +1,25 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { DriverSchema } from "../schemas/drivers";
 import { formatDate } from "@/lib/utils";
-import { createDriver, isDriverRegistered } from "../db/drivers";
+import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
+import { createDriver, isDriverRegistered } from "../db/drivers";
+import { DriverSchema } from "../schemas/drivers";
+import { redirect } from "next/navigation";
+
+export const signOut = async () => {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/sign-in");
+};
 
 export async function registerDriver(Driver: unknown) {
+  const supabase = await createClient();
   try {
-    const session = await auth();
-    if (!session?.user.id) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.id) {
       return {
         error: "User not authenticated",
       };
@@ -32,7 +42,7 @@ export async function registerDriver(Driver: unknown) {
 
     if (!result.data.license_expiry) return null;
     const date = result.data.license_expiry.toString();
-    const expiryDate = formatDate(date);
+    const expiryDate = new Date(formatDate(date));
 
     const newDriver = {
       license_expiry: expiryDate,
@@ -40,8 +50,10 @@ export async function registerDriver(Driver: unknown) {
       first_name: result.data.first_name,
       last_name: result.data.last_name,
       phone_number: result.data.phone_number,
-      operator_id: session?.user.id,
+      operator_id: user.id,
     };
+
+    console.log(newDriver);
 
     const isRegistered = await isDriverRegistered(result.data.license_number);
     if (isRegistered) {

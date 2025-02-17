@@ -6,7 +6,7 @@ import { getPaginatedDrivers } from "@/features/drivers/db/drivers";
 import { Driver } from "@/features/drivers/schemas/drivers";
 import { ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const DataTable = dynamic<{
   data: Driver[];
@@ -42,6 +42,7 @@ export default function DriverPage() {
 
       try {
         const response = await getPaginatedDrivers({ from, to });
+        console.log(response);
         setData(response.data);
         setTotalCount(response.count);
       } catch (error) {

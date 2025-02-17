@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import { formatDate } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { createVehicle, isVehicleRegistered } from "../db/vehicles";

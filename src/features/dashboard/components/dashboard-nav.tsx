@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/button";
 import Logo from "./brand-logo";
-import NavUser from "./nav-user";
 import NotificationDashboard from "./notification";
 import SearchBar from "./search-bar";
+import { signOut } from "@/features/drivers/actions/drivers";
 
 export default function Navigation() {
   return (
@@ -13,7 +14,7 @@ export default function Navigation() {
           <SearchBar />
         </div>
         <div>
-          <NavUser />
+          <Button onClick={signOut}>Signout</Button>
         </div>
       </div>
     </div>

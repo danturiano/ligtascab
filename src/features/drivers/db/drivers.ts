@@ -1,6 +1,6 @@
-import supabase from "@/lib/supabase";
 import { cache } from "react";
 import { Driver } from "../schemas/drivers";
+import { createClient } from "@/supabase/client";
 
 interface PaginationParams {
   from: number;
@@ -16,6 +16,11 @@ export const getPaginatedDrivers = async ({
   from,
   to,
 }: PaginationParams): Promise<PaginatedResponse<Driver>> => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log(user);
   const { data, error, count } = await supabase
     .from("drivers")
     .select("*", { count: "exact" })
@@ -31,6 +36,7 @@ export const getPaginatedDrivers = async ({
 };
 
 export const getAllDrivers = cache(async (): Promise<Driver[]> => {
+  const supabase = createClient();
   const { data: vehicles, error } = await supabase.from("drivers").select("*");
 
   if (error) {
@@ -42,6 +48,7 @@ export const getAllDrivers = cache(async (): Promise<Driver[]> => {
 });
 
 export const createDriver = async (newDriver: Driver) => {
+  const supabase = createClient();
   const { error } = await supabase.from("drivers").insert([newDriver]);
 
   if (error) {

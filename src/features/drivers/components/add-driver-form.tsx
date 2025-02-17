@@ -62,9 +62,9 @@ export default function DriverForm() {
             control={form.control}
             name="first_name"
             render={({ field }) => (
-              <FormItem className="w-full" >
+              <FormItem className="w-full">
                 <FormLabel>First name</FormLabel>
-                <FormControl >
+                <FormControl>
                   <Input {...field} />
                 </FormControl>
                 <FormMessage />
@@ -89,9 +89,9 @@ export default function DriverForm() {
           control={form.control}
           name="phone_number"
           render={({ field }) => (
-            <FormItem className="w-full" >
+            <FormItem className="w-full">
               <FormLabel>Phone number</FormLabel>
-              <FormControl >
+              <FormControl>
                 <Input {...field} />
               </FormControl>
               <FormMessage />
@@ -139,7 +139,7 @@ export default function DriverForm() {
                 <PopoverContent className="w-full p-0" align="end">
                   <Calendar
                     mode="single"
-                    selected={field.value}
+                    selected={field.value || undefined}
                     onSelect={field.onChange}
                     disabled={(date) => date < new Date("1900-01-01")}
                     initialFocus

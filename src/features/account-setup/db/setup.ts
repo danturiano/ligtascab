@@ -1,6 +1,3 @@
-import { auth } from "@/lib/auth";
-import supabase from "@/lib/supabase";
-
 type UserUpdate = {
   first_name: string;
   last_name: string;

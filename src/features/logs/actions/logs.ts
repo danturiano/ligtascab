@@ -9,20 +9,9 @@ import {
   updateVehicleStatus,
 } from "../db/logs";
 import { LogSchema } from "../schemas/logs";
-import { createClient } from "@/supabase/server";
 
 export async function createNewLog(DriverLog: unknown) {
-  const supabase = await createClient();
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user?.id) {
-      return {
-        error: "User not authenticated",
-      };
-    }
-
     const result = LogSchema.safeParse(DriverLog);
 
     if (!result.success) {
@@ -39,7 +28,7 @@ export async function createNewLog(DriverLog: unknown) {
     }
 
     const log = {
-      operator_id: user.id as string,
+      operator_id: result.data.driver.operator_id,
       driver_id: result.data.driver.id as string,
       plate_number: result.data.plate_number,
       driver_name: result.data.driver_name,
@@ -47,6 +36,8 @@ export async function createNewLog(DriverLog: unknown) {
     };
 
     const status = `${result.data.log_type === "Time-in" ? "active" : "inactive"}`;
+
+    console.log(log);
 
     if (log.log_type === "Time-out") {
       const isActive = await checkDriverStatus(log.driver_id);
@@ -59,7 +50,7 @@ export async function createNewLog(DriverLog: unknown) {
       }
       const isCreated = await createLog(log);
       if (!isCreated) {
-        return { message: "Log was not created successfully" };
+        return { error: "Log was not created" };
       }
     }
 
@@ -70,7 +61,7 @@ export async function createNewLog(DriverLog: unknown) {
       }
       const isCreated = await createLog(log);
       if (!isCreated) {
-        return { message: "Log was not created successfully" };
+        return { error: "Log was not created" };
       }
     }
 

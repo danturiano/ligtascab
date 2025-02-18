@@ -1,4 +1,6 @@
-import { createClient } from "@/supabase/client";
+"use server";
+
+import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
@@ -11,8 +13,6 @@ export type Vehicle = {
   registration_number: string;
   status?: string;
 };
-
-const supabase = createClient();
 
 export const isVehicleRegistered = async (
   plate_number: string,
@@ -29,6 +29,7 @@ export const isVehicleRegistered = async (
 };
 
 export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
+  const supabase = await createClient();
   const { data: vehicles, error } = await supabase
     .from("vehicles")
     .select("*")
@@ -42,9 +43,8 @@ export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
   return vehicles ?? [];
 });
 
-export async function getVehicle(
-  registration_number: string,
-): Promise<Vehicle> {
+export async function getVehicle(registration_number: string) {
+  const supabase = await createClient();
   const { data: vehicle, error } = await supabase
     .from("vehicles")
     .select()
@@ -55,59 +55,29 @@ export async function getVehicle(
     console.error("Error fetching drivers:", error);
   }
 
-  return vehicle;
+  return { vehicle, error };
 }
 
 export async function createVehicle(newVehicle: Vehicle) {
-  const { data, error } = await supabase.from("vehicles").insert([newVehicle]);
+  const supabase = await createClient();
+  const { error } = await supabase.from("vehicles").insert([newVehicle]);
 
   if (error) {
-    console.log(error);
-    throw new Error("cannot add vehicle");
+    console.error(error);
+    return error;
   }
-
-  return { data, error };
 }
 
 export async function deleteVehicle(id: string) {
-  const { error } = await supabase.from("vehicles").delete().eq("id", id);
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("vehicles").delete().eq("id", id);
 
   if (error) {
-    console.log(error);
-    throw new Error("cannot delete vehicle");
+    console.error(error);
+    return { error };
   }
 
   revalidatePath("/dashboard/vehicles");
 
-  return { error };
+  return { data, error };
 }
-
-interface PaginationParams {
-  from: number;
-  to: number;
-}
-
-interface PaginatedResponse<T> {
-  data: T[];
-  count: number;
-}
-
-export const getPaginatedVehicles = cache(
-  async ({
-    from,
-    to,
-  }: PaginationParams): Promise<PaginatedResponse<Vehicle>> => {
-    const { data, error, count } = await supabase
-      .from("vehicles")
-      .select("*", { count: "exact" })
-      .range(from, to)
-      .order("status", { ascending: true });
-
-    if (error) throw error;
-
-    return {
-      data: data || [],
-      count: count || 0,
-    };
-  },
-);

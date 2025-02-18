@@ -78,6 +78,7 @@ export default function LogForm({ driver }: LogFormProps) {
       form.setValue("driver_name", driver_name);
       form.setValue("driver", driver);
     }
+    console.log(form.getValues());
   }, [driver, form]);
 
   useEffect(() => {
@@ -105,7 +106,7 @@ export default function LogForm({ driver }: LogFormProps) {
       if (response.message) {
         toast.success(response.message);
         form.reset();
-        setVehicles([]); // Clear vehicles cache
+        setVehicles([]);
       }
       if (response.error) {
         toast.error(response.error);

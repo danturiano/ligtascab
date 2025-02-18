@@ -2,7 +2,8 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { columns } from "@/features/vehicles/components/columns";
-import { getPaginatedVehicles, Vehicle } from "@/features/vehicles/db/vehicles";
+import { Vehicle } from "@/features/vehicles/db/vehicles";
+import { createClient } from "@/supabase/client";
 import { ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -40,16 +41,26 @@ export default function VehiclePage() {
       const to = from + pagination.pageSize - 1;
 
       try {
-        const response = await getPaginatedVehicles({ from, to });
-        setData(response.data);
-        setTotalCount(response.count);
+        const supabase = createClient();
+        const { data, count } = await supabase
+          .from("vehicles")
+          .select("*", { count: "exact" })
+          .range(from, to)
+          .order("status", { ascending: true });
+
+        if (data) {
+          setData(data);
+        }
+        if (count) {
+          setTotalCount(count);
+        }
       } catch (error) {
         console.error("Error fetching logs:", error);
       }
     };
 
     fetchData();
-  }, [pagination]);
+  }, [pagination, data]);
 
   return (
     <div className="w-full">

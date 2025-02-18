@@ -67,4 +67,3 @@ export function formatDateTime(timestamp: string): string {
 
 // Example usage
 const formattedDate = formatDateTime("2025-02-09 08:53:31.831182+00");
-console.log(formattedDate);

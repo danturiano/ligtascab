@@ -2,8 +2,8 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { columns } from "@/features/drivers/components/columns";
-import { getPaginatedDrivers } from "@/features/drivers/db/drivers";
 import { Driver } from "@/features/drivers/schemas/drivers";
+import { createClient } from "@/supabase/client";
 import { ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -41,17 +41,26 @@ export default function DriverPage() {
       const to = from + pagination.pageSize - 1;
 
       try {
-        const response = await getPaginatedDrivers({ from, to });
-        console.log(response);
-        setData(response.data);
-        setTotalCount(response.count);
+        const supabase = createClient();
+        const { data, count } = await supabase
+          .from("drivers")
+          .select("*", { count: "exact" })
+          .range(from, to)
+          .order("status", { ascending: true });
+        if (data) {
+          setData(data);
+        }
+        if (count) {
+          setTotalCount(count);
+        }
       } catch (error) {
         console.error("Error fetching logs:", error);
       }
     };
 
     fetchData();
-  }, [pagination]);
+  }, [pagination, data]);
+
   return (
     <div>
       <DataTable

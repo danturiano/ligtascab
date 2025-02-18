@@ -34,7 +34,7 @@ export const VehicleDelete = ({ id }: { id: string }) => {
       const { toast } = await import("react-hot-toast");
       const { error } = await deleteVehicle(id);
       if (error) {
-        toast.error(error);
+        toast.error(error.message);
         return;
       }
       toast.success("Vehicle successfully deleted!");

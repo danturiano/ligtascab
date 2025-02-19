@@ -64,6 +64,7 @@ export default function VehiclePage() {
 
   return (
     <div className="w-full">
+      <h1 className="text-xl font-semibold">Tricycles</h1>
       <DataTable
         data={data}
         columns={columns}

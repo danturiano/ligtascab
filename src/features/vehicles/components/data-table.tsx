@@ -92,7 +92,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full px-10 flex min-h-[350px] justify-center items-center">
+    <div className="w-full flex min-h-[350px] justify-center items-center">
       <div className="w-full">
         <div className="flex items-center py-4">
           <div className="flex gap-2 w-full">

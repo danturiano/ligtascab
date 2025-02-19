@@ -71,14 +71,17 @@ export default function DriverLogPage() {
   }, [pagination, data]);
 
   return (
-    <div className="px-10 w-full md:flex-row md:flex md:gap-6">
-      <QRCodeReader />
-      <DataTable
-        data={data}
-        columns={columns}
-        pageCount={Math.ceil(totalCount / pagination.pageSize)}
-        onPaginationChange={setPagination}
-      />
+    <div>
+      <h1 className="text-xl font-semibold">Drivers</h1>
+      <div className="w-full md:flex-row md:flex md:gap-6">
+        <QRCodeReader />
+        <DataTable
+          data={data}
+          columns={columns}
+          pageCount={Math.ceil(totalCount / pagination.pageSize)}
+          onPaginationChange={setPagination}
+        />
+      </div>
     </div>
   );
 }

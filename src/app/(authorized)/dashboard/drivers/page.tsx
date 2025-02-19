@@ -63,6 +63,7 @@ export default function DriverPage() {
 
   return (
     <div>
+      <h1 className="text-xl font-semibold">Drivers</h1>
       <DataTable
         data={data}
         columns={columns}

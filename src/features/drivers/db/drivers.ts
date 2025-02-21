@@ -36,3 +36,14 @@ export const isDriverRegistered = async (license_number: string) => {
 
   return isRegistered;
 };
+
+export const getPaginatedDrivers = async (from: number, to: number) => {
+  const supabase = await createClient();
+  const { data: drivers, count } = await supabase
+    .from("drivers")
+    .select("*", { count: "exact" })
+    .range(from, to)
+    .order("status", { ascending: true });
+
+  return { drivers, count };
+};

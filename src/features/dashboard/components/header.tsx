@@ -6,6 +6,7 @@ import { createClient } from "@/supabase/client";
 import { BookOpen, Car, FileClock, SquareTerminal } from "lucide-react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
+import ExpiryNotifications from "./expiry-notification";
 
 const data = {
   navMain: [
@@ -73,14 +74,7 @@ const AppHeader = () => {
             </a>
           </div>
           <div className="flex items-center space-x-6">
-            <a
-              className="transition-all duration-75 active:scale-95"
-              href="/upgrade"
-            >
-              <span className="bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-sm text-transparent">
-                Upgrade
-              </span>
-            </a>
+            <ExpiryNotifications />
             <a
               href="#"
               className="hidden text-sm text-slate-500 transition-colors hover:text-slate-700 sm:block"
@@ -153,14 +147,9 @@ const AppHeader = () => {
               );
             })}
           </div>
-          <div className="mt-2 flex items-center space-x-2">
-            {/* <div className="flex items-center space-x-2">
-              <h3 className="text-sm font-medium">Tokens</h3>
-            </div> */}
-            {/* <p className="text-sm text-slate-600">
-              {userData?.tokens} / 20 tokens
-            </p> */}
-          </div>
+          {/* <div className="flex items-center space-x-2">
+            <Bell />
+          </div> */}
         </div>
       </div>
     </div>

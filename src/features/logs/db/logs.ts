@@ -1,9 +1,9 @@
 "use server";
 
-import { cache } from "react";
-import { Log } from "../schemas/logs";
 import { Driver } from "@/features/drivers/schemas/drivers";
 import { createClient } from "@/supabase/server";
+import { cache } from "react";
+import { Log } from "../schemas/logs";
 
 export type ApiResponse<T> = {
   data?: T;
@@ -25,7 +25,7 @@ export const getDriver = async (id: string): Promise<Driver> => {
       first_name: "",
       id: "",
       last_name: "",
-      license_expiry: null,
+      license_expiry: new Date(0),
       license_number: "",
       operator_id: "",
       phone_number: "",
@@ -84,7 +84,7 @@ export const getAllLogs = cache(async (): Promise<Log[]> => {
 
 export const updateVehicleStatus = async (
   plate_number: string,
-  status: string,
+  status: string
 ) => {
   const supabase = await createClient();
   const { error } = await supabase
@@ -103,7 +103,7 @@ export const updateVehicleStatus = async (
 
 export const updateDriverStatus = async (
   id: string,
-  status: string,
+  status: string
 ): Promise<boolean> => {
   const supabase = await createClient();
   const { error } = await supabase
@@ -150,4 +150,15 @@ export const checkDriverStatus = async (id: string): Promise<boolean> => {
   }
 
   return true;
+};
+
+export const getPaginatedLogs = async (from: number, to: number) => {
+  const supabase = await createClient();
+  const { data: logs, count } = await supabase
+    .from("driver_logs")
+    .select("*", { count: "exact" })
+    .range(from, to)
+    .order("created_at", { ascending: false });
+
+  return { logs, count };
 };

@@ -6,9 +6,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import VehicleForm from "./add-vehicle-form";
 
-export function AddVehicle() {
+export function AddVehicle({ children }: { children: React.ReactNode }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -18,7 +17,7 @@ export function AddVehicle() {
         <DialogHeader>
           <DialogTitle>Add Vehicle</DialogTitle>
         </DialogHeader>
-        <VehicleForm />
+        {children}
       </DialogContent>
     </Dialog>
   );

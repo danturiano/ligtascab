@@ -19,13 +19,15 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { DriverSchema } from "../schemas/drivers";
 import { registerDriver } from "../actions/drivers";
+import { DriverSchema } from "../schemas/drivers";
+import toast from "react-hot-toast";
 
 export default function DriverForm() {
   const [isPending, startTransition] = useTransition();
@@ -40,17 +42,28 @@ export default function DriverForm() {
     },
   });
 
+  const queryClient = useQueryClient();
+
+  const useCreateDriver = useMutation({
+    mutationFn: registerDriver,
+  });
+
   function onSubmit(data: z.infer<typeof DriverSchema>) {
-    startTransition(async () => {
-      const { toast } = await import("react-hot-toast");
-      const response = await registerDriver(data);
-      if (response?.message) {
-        toast.success(response.message);
-        form.reset();
-      }
-      if (response?.error) {
-        toast.error(response.error);
-      }
+    startTransition(() => {
+      useCreateDriver.mutate(data, {
+        onSuccess: (response) => {
+          queryClient.invalidateQueries({
+            queryKey: ["drivers"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["notifications"],
+          });
+          if (response?.message) {
+            toast.success(response.message);
+            form.reset();
+          }
+        },
+      });
     });
   }
 
@@ -115,16 +128,16 @@ export default function DriverForm() {
           control={form.control}
           name="license_expiry"
           render={({ field }) => (
-            <FormItem className="flex flex-col w-full">
-              <FormLabel>License Expiration Date</FormLabel>
+            <FormItem className="flex flex-col">
+              <FormLabel>Date of birth</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant="outline"
+                      variant={"outline"}
                       className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
@@ -136,13 +149,12 @@ export default function DriverForm() {
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="end">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value || undefined}
+                    selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) => date < new Date("1900-01-01")}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>

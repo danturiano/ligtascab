@@ -65,5 +65,12 @@ export function formatDateTime(timestamp: string): string {
   return date.toLocaleString("en-US", options);
 }
 
-// Example usage
-const formattedDate = formatDateTime("2025-02-09 08:53:31.831182+00");
+export const isExpiringWithinMonth = (expiryDate: Date): boolean => {
+  const today = new Date();
+  const oneMonthFromNow = new Date(today.setMonth(today.getMonth() + 1));
+  const expiry = new Date(expiryDate);
+  if (expiry <= oneMonthFromNow) {
+    return true;
+  }
+  return false;
+};

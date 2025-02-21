@@ -61,7 +61,7 @@ export default function LogForm({ driver }: LogFormProps) {
         first_name: "",
         id: "",
         last_name: "",
-        license_expiry: null,
+        license_expiry: new Date(0),
         license_number: "",
         operator_id: "",
         phone_number: "",
@@ -149,12 +149,12 @@ export default function LogForm({ driver }: LogFormProps) {
                           role="combobox"
                           className={cn(
                             "w-full justify-between",
-                            !field.value && "text-muted-foreground",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value
                             ? vehicles.find(
-                                (vehicle) => vehicle === field.value,
+                                (vehicle) => vehicle === field.value
                               )
                             : "Select vehicle"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

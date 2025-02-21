@@ -26,6 +26,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { registerVehicle } from "../actions/vehicles";
 import { VehicleSchema } from "../schemas/vehicles";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export default function VehicleForm() {
   const [isPending, startTransition] = useTransition();
@@ -38,17 +40,28 @@ export default function VehicleForm() {
     },
   });
 
+  const queryClient = useQueryClient();
+
+  const useCreateVehicle = useMutation({
+    mutationFn: registerVehicle,
+  });
+
   function onSubmit(data: z.infer<typeof VehicleSchema>) {
     startTransition(async () => {
-      const { toast } = await import("react-hot-toast");
-      const response = await registerVehicle(data);
-      if (response?.message) {
-        toast.success(response.message);
-        form.reset();
-      }
-      if (response?.error) {
-        toast.error(response.error);
-      }
+      useCreateVehicle.mutate(data, {
+        onSuccess: (response) => {
+          queryClient.invalidateQueries({
+            queryKey: ["vehicles", "notifications"],
+          });
+          if (response.message) {
+            toast.success(response.message);
+          }
+          form.reset();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      });
     });
   }
 
@@ -99,7 +112,6 @@ export default function VehicleForm() {
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) => date < new Date("1900-01-01")}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>

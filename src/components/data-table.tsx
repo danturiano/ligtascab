@@ -8,6 +8,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
   PaginationState,
   SortingState,
   useReactTable,
@@ -31,37 +32,34 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
-import React, { useEffect } from "react";
-import { AddDriver } from "./add-driver";
+import React from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
-  onPaginationChange: (pagination: PaginationState) => void;
+  currentPagination: PaginationState;
+  onPaginationChange: OnChangeFn<PaginationState>;
+  children?: React.ReactNode;
+  filter_by: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pageCount,
+  currentPagination,
   onPaginationChange,
+  filter_by,
+  children,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 7,
-  });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  useEffect(() => {
-    onPaginationChange(pagination);
-  }, [pagination, onPaginationChange]);
 
   const table = useReactTable({
     data,
@@ -75,33 +73,33 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
+    onPaginationChange: onPaginationChange,
     manualPagination: true,
     state: {
-      pagination,
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: currentPagination,
     },
   });
 
   return (
-    <div className="w-full flex min-h-[350px] justify-center items-center">
+    <div className="w-full flex min-h-[350px]">
       <div className="w-full">
         <div className="flex items-center py-4">
           <div className="flex gap-2 w-full">
             <Input
-              placeholder="Search by last name..."
+              placeholder={`Search by ${filter_by.replace(/_/g, " ").replace(/\b\w/, (char) => char.toLowerCase())}...`}
               value={
-                (table.getColumn("last_name")?.getFilterValue() as string) ?? ""
+                (table.getColumn(filter_by)?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("last_name")?.setFilterValue(event.target.value)
+                table.getColumn(filter_by)?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
-            <AddDriver />
+            {children}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -142,7 +140,7 @@ export function DataTable<TData, TValue>({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                       </TableHead>
                     );
@@ -161,7 +159,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}

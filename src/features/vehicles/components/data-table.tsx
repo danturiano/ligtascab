@@ -31,19 +31,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
-import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
-
-const AddVehicle = dynamic(
-  () => import("./add-vehicle").then((mod) => mod.AddVehicle),
-  { loading: () => <p>loading</p>, ssr: false },
-);
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
   onPaginationChange: (pagination: PaginationState) => void;
+  children: React.ReactNode;
+  filter_by: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,6 +47,8 @@ export function DataTable<TData, TValue>({
   data,
   pageCount,
   onPaginationChange,
+  filter_by,
+  children,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -63,7 +61,6 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   useEffect(() => {
     onPaginationChange(pagination);
   }, [pagination, onPaginationChange]);
@@ -97,19 +94,16 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center py-4">
           <div className="flex gap-2 w-full">
             <Input
-              placeholder="Search by Plate Number"
+              placeholder={`Search by ${filter_by.replace(/_/g, " ").replace(/\b\w/, (char) => char.toLowerCase())}...`}
               value={
-                (table.getColumn("plate_number")?.getFilterValue() as string) ??
-                ""
+                (table.getColumn(filter_by)?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table
-                  .getColumn("plate_number")
-                  ?.setFilterValue(event.target.value)
+                table.getColumn(filter_by)?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
-            <AddVehicle />
+            {children}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

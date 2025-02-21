@@ -6,9 +6,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import DriverForm from "./add-driver-form";
 
-export function AddDriver() {
+export function AddDriver({ children }: { children: React.ReactNode }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -18,7 +17,7 @@ export function AddDriver() {
         <DialogHeader>
           <DialogTitle>Add Driver</DialogTitle>
         </DialogHeader>
-        <DriverForm />
+        {children}
       </DialogContent>
     </Dialog>
   );

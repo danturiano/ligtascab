@@ -1,10 +1,9 @@
 "use server";
 
-import { formatDate } from "@/lib/utils";
+import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { createVehicle, isVehicleRegistered } from "../db/vehicles";
 import { VehicleSchema } from "../schemas/vehicles";
-import { createClient } from "@/supabase/server";
 
 export async function registerVehicle(Vehicle: unknown) {
   const supabase = await createClient();
@@ -12,7 +11,7 @@ export async function registerVehicle(Vehicle: unknown) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) return { error: "User not authenticated" };
 
   const result = VehicleSchema.safeParse(Vehicle);
 
@@ -37,11 +36,8 @@ export async function registerVehicle(Vehicle: unknown) {
     return { error: "Vehicle is already registered." };
   }
 
-  const date = result.data.registration_expiry.toString();
-  const expiryDate = formatDate(date);
-
   const newVehicle = {
-    registration_expiry: expiryDate,
+    registration_expiry: result.data.registration_expiry,
     registration_number: result.data.registration_number,
     plate_number: result.data.plate_number,
     operator_id: user.id,
@@ -52,7 +48,8 @@ export async function registerVehicle(Vehicle: unknown) {
     return { error: "Cannot create a new vehicle." };
   }
 
-  revalidatePath("/dashboard/vehicles");
+  revalidatePath("/dashboard/vehicles", "page");
+  revalidatePath("/dashboard", "layout");
 
   return { message: "Account created sucessfully" };
 }

@@ -9,20 +9,20 @@ export type Vehicle = {
   operator_id?: string;
   plate_number: string;
   qr_code?: string | null;
-  registration_expiry: string;
+  registration_expiry: Date;
   registration_number: string;
   status?: string;
 };
 
 export const isVehicleRegistered = async (
   plate_number: string,
-  registration_number: string,
+  registration_number: string
 ) => {
   const vehicles = await getAllVehicle();
   const isRegistered = vehicles.some(
     (vehicle) =>
       vehicle.plate_number === plate_number ||
-      vehicle.registration_number === registration_number,
+      vehicle.registration_number === registration_number
   );
 
   return isRegistered;
@@ -81,3 +81,14 @@ export async function deleteVehicle(id: string) {
 
   return { data, error };
 }
+
+export const getPaginatedVehicles = async (from: number, to: number) => {
+  const supabase = await createClient();
+  const { data: vehicles, count } = await supabase
+    .from("vehicles")
+    .select("*", { count: "exact" })
+    .range(from, to)
+    .order("status", { ascending: true });
+
+  return { vehicles, count };
+};

@@ -9,7 +9,7 @@ type UserUpdate = {
   image?: string;
 };
 
-export async function updateUser(userr: UserUpdate) {
+export async function updateUser(userUpdate: UserUpdate) {
   const supabase = createClient();
   const {
     data: { user },
@@ -19,7 +19,7 @@ export async function updateUser(userr: UserUpdate) {
 
   const { data, error } = await supabase
     .from("users")
-    .update(user)
+    .update(userUpdate)
     .eq("phone_number", phone_number);
 
   if (error) {

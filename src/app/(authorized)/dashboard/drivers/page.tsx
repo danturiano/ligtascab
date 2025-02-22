@@ -1,8 +1,6 @@
 "use client";
 
-import SpinnerLoad from "@/components/spinner-load";
 import { AddDriver } from "@/features/drivers/components/add-driver";
-import DriverForm from "@/features/drivers/components/add-driver-form";
 import { columns } from "@/features/drivers/components/columns";
 import { getPaginatedDrivers } from "@/features/drivers/db/drivers";
 import { Driver } from "@/features/drivers/schemas/drivers";
@@ -19,9 +17,15 @@ const DataTable = dynamic<{
   filter_by: string;
   currentPagination: PaginationState;
   onPaginationChange: OnChangeFn<PaginationState>;
+  isPending: boolean;
 }>(() => import("@/components/data-table").then((mod) => mod.DataTable), {
   ssr: false,
 });
+
+const DriverForm = dynamic(
+  () => import("@/features/drivers/components/add-driver-form"),
+  { ssr: false }
+);
 
 export default function DriverPage() {
   const [totalCount, setTotalCount] = useState(0);
@@ -44,24 +48,19 @@ export default function DriverPage() {
   return (
     <div>
       <h1 className="text-xl font-semibold">Drivers</h1>
-      {isPending ? (
-        <div className="w-full flex items-center justify-center">
-          <SpinnerLoad />
-        </div>
-      ) : (
-        <DataTable
-          data={data?.drivers ?? []}
-          columns={columns}
-          pageCount={Math.ceil(totalCount / pagination.pageSize)}
-          onPaginationChange={setPagination}
-          currentPagination={pagination}
-          filter_by="last_name"
-        >
-          <AddDriver>
-            <DriverForm />
-          </AddDriver>
-        </DataTable>
-      )}
+      <DataTable
+        data={data?.drivers ?? []}
+        columns={columns}
+        pageCount={Math.ceil(totalCount / pagination.pageSize)}
+        onPaginationChange={setPagination}
+        currentPagination={pagination}
+        filter_by="last_name"
+        isPending={isPending}
+      >
+        <AddDriver>
+          <DriverForm />
+        </AddDriver>
+      </DataTable>
     </div>
   );
 }

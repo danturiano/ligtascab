@@ -23,12 +23,12 @@ export const useExpiryCheck = () => {
 
       const expiringDrivers =
         drivers?.filter((driver) =>
-          isExpiringWithinMonth(driver.license_expiry),
+          isExpiringWithinMonth(driver.license_expiry)
         ) || [];
 
       const expiringVehicles =
         vehicles?.filter((vehicle) =>
-          isExpiringWithinMonth(vehicle.registration_expiry),
+          isExpiringWithinMonth(vehicle.registration_expiry)
         ) || [];
 
       console.log(expiringDrivers, expiringVehicles);

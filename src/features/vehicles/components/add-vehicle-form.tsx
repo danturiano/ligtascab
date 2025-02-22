@@ -51,7 +51,10 @@ export default function VehicleForm() {
       useCreateVehicle.mutate(data, {
         onSuccess: (response) => {
           queryClient.invalidateQueries({
-            queryKey: ["vehicles", "notifications"],
+            queryKey: ["vehicles"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["notifications"],
           });
           if (response.message) {
             toast.success(response.message);
@@ -94,7 +97,7 @@ export default function VehicleForm() {
                       variant="outline"
                       className={cn(
                         "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (

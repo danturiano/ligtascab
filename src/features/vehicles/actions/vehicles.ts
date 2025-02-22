@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/supabase/server";
-import { revalidatePath } from "next/cache";
 import { createVehicle, isVehicleRegistered } from "../db/vehicles";
 import { VehicleSchema } from "../schemas/vehicles";
 
@@ -29,7 +28,7 @@ export async function registerVehicle(Vehicle: unknown) {
 
   const isRegistered = await isVehicleRegistered(
     result.data.plate_number,
-    result.data.registration_number,
+    result.data.registration_number
   );
 
   if (isRegistered) {
@@ -47,9 +46,6 @@ export async function registerVehicle(Vehicle: unknown) {
   if (error) {
     return { error: "Cannot create a new vehicle." };
   }
-
-  revalidatePath("/dashboard/vehicles", "page");
-  revalidatePath("/dashboard", "layout");
 
   return { message: "Account created sucessfully" };
 }

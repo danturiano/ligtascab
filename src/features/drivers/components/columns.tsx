@@ -14,7 +14,7 @@ const ExpirySort = dynamic(() => import("./expiry-sort"), {
 });
 const GenerateQRCode = dynamic(
   () => import("@/features/vehicles/components/generate-qr"),
-  { loading: () => <div>loading</div>, ssr: false },
+  { loading: () => <div>loading</div>, ssr: false }
 );
 
 export const columns: ColumnDef<Driver>[] = [

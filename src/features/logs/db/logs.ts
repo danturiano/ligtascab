@@ -5,12 +5,6 @@ import { createClient } from "@/supabase/server";
 import { cache } from "react";
 import { Log } from "../schemas/logs";
 
-export type ApiResponse<T> = {
-  data?: T;
-  error?: string;
-  message?: string;
-};
-
 export const getDriver = async (id: string): Promise<Driver> => {
   const supabase = await createClient();
   const { data: driver, error } = await supabase
@@ -82,6 +76,33 @@ export const getAllLogs = cache(async (): Promise<Log[]> => {
   return logs ?? [];
 });
 
+export const checkDriverStatus = async (id: string): Promise<boolean> => {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("drivers")
+    .select("status")
+    .eq("id", id)
+    .eq("status", "active")
+    .single();
+
+  if (error) {
+    return false;
+  }
+
+  return true;
+};
+
+export const getPaginatedLogs = async (from: number, to: number) => {
+  const supabase = await createClient();
+  const { data: logs, count } = await supabase
+    .from("driver_logs")
+    .select("*", { count: "exact" })
+    .range(from, to)
+    .order("created_at", { ascending: false });
+
+  return { logs, count };
+};
+
 export const updateVehicleStatus = async (
   plate_number: string,
   status: string
@@ -134,31 +155,4 @@ export const createLog = async (newLog: Log): Promise<boolean> => {
   }
 
   return true;
-};
-
-export const checkDriverStatus = async (id: string): Promise<boolean> => {
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("drivers")
-    .select("status")
-    .eq("id", id)
-    .eq("status", "active")
-    .single();
-
-  if (error) {
-    return false;
-  }
-
-  return true;
-};
-
-export const getPaginatedLogs = async (from: number, to: number) => {
-  const supabase = await createClient();
-  const { data: logs, count } = await supabase
-    .from("driver_logs")
-    .select("*", { count: "exact" })
-    .range(from, to)
-    .order("created_at", { ascending: false });
-
-  return { logs, count };
 };

@@ -1,6 +1,5 @@
 "use client";
 
-import SpinnerLoad from "@/components/spinner-load";
 import { Skeleton } from "@/components/ui/skeleton";
 import { columns } from "@/features/logs/components/columns";
 import { getPaginatedLogs } from "@/features/logs/db/logs";
@@ -27,6 +26,7 @@ const DataTable = dynamic<{
   currentPagination: PaginationState;
   onPaginationChange: OnChangeFn<PaginationState>;
   children?: React.ReactNode;
+  isPending: boolean;
 }>(() => import("@/components/data-table").then((mod) => mod.DataTable), {
   ssr: false,
 });
@@ -56,20 +56,15 @@ export default function DriverLogPage() {
       <h1 className="text-xl font-semibold">Drivers</h1>
       <div className="w-full md:flex-row md:flex md:gap-6">
         <QRCodeReader />
-        {isPending ? (
-          <div className="w-full flex items-center justify-center">
-            <SpinnerLoad />
-          </div>
-        ) : (
-          <DataTable
-            data={data?.logs ?? []}
-            columns={columns}
-            pageCount={Math.ceil(totalCount / pagination.pageSize)}
-            onPaginationChange={setPagination}
-            filter_by="driver_name"
-            currentPagination={pagination}
-          />
-        )}
+        <DataTable
+          data={data?.logs ?? []}
+          columns={columns}
+          pageCount={Math.ceil(totalCount / pagination.pageSize)}
+          onPaginationChange={setPagination}
+          filter_by="driver_name"
+          currentPagination={pagination}
+          isPending={isPending}
+        />
       </div>
     </div>
   );

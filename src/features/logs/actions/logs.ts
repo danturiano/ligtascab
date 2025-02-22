@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import {
   checkDriverStatus,
   createLog,
@@ -71,13 +70,11 @@ export async function createNewLog(DriverLog: unknown) {
     }
     const isVehicleUpdated = await updateVehicleStatus(
       log.plate_number,
-      status,
+      status
     );
     if (!isVehicleUpdated) {
       return { message: "Cannot update vehicle status." };
     }
-
-    revalidatePath("/dashboard/driver-logs", "page");
 
     return {
       message: "Success!",

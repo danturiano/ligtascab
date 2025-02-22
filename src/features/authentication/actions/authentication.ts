@@ -19,7 +19,7 @@ export async function signInWithCredentials(User: unknown) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     phone: result.data.phone_number,
     password: result.data.password,
   });

@@ -2,10 +2,9 @@
 
 import { formatDate } from "@/lib/utils";
 import { createClient } from "@/supabase/server";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createDriver, isDriverRegistered } from "../db/drivers";
 import { DriverSchema } from "../schemas/drivers";
-import { redirect } from "next/navigation";
 
 export const signOut = async () => {
   const supabase = await createClient();
@@ -64,8 +63,6 @@ export async function registerDriver(Driver: unknown) {
     if (!isCreated) {
       return { error: "Unable to create new driver." };
     }
-
-    revalidatePath("/dashboard/drivers", "page");
 
     return { message: "Driver created successfully!" };
   } catch (error) {

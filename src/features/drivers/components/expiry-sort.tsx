@@ -12,7 +12,7 @@ export default function ExpirySort({
       status?: string | undefined;
       first_name: string;
       last_name: string;
-      license_expiry: Date | null;
+      license_expiry: Date;
       license_number: string;
       operator_id?: string | undefined;
       phone_number: string;

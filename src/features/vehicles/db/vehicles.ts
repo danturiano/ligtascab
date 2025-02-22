@@ -1,7 +1,5 @@
 "use server";
-
 import { createClient } from "@/supabase/server";
-import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
 export type Vehicle = {
@@ -13,6 +11,28 @@ export type Vehicle = {
   registration_number: string;
   status?: string;
 };
+
+export async function createVehicle(newVehicle: Vehicle) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("vehicles").insert([newVehicle]);
+
+  if (error) {
+    console.error(error);
+    return error;
+  }
+}
+
+export async function deleteVehicle(id: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("vehicles").delete().eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return { error };
+  }
+
+  return { data, error };
+}
 
 export const isVehicleRegistered = async (
   plate_number: string,
@@ -26,6 +46,17 @@ export const isVehicleRegistered = async (
   );
 
   return isRegistered;
+};
+
+export const getPaginatedVehicles = async (from: number, to: number) => {
+  const supabase = await createClient();
+  const { data: vehicles, count } = await supabase
+    .from("vehicles")
+    .select("*", { count: "exact" })
+    .range(from, to)
+    .order("status", { ascending: true });
+
+  return { vehicles, count };
 };
 
 export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
@@ -57,38 +88,3 @@ export async function getVehicle(registration_number: string) {
 
   return { vehicle, error };
 }
-
-export async function createVehicle(newVehicle: Vehicle) {
-  const supabase = await createClient();
-  const { error } = await supabase.from("vehicles").insert([newVehicle]);
-
-  if (error) {
-    console.error(error);
-    return error;
-  }
-}
-
-export async function deleteVehicle(id: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("vehicles").delete().eq("id", id);
-
-  if (error) {
-    console.error(error);
-    return { error };
-  }
-
-  revalidatePath("/dashboard/vehicles");
-
-  return { data, error };
-}
-
-export const getPaginatedVehicles = async (from: number, to: number) => {
-  const supabase = await createClient();
-  const { data: vehicles, count } = await supabase
-    .from("vehicles")
-    .select("*", { count: "exact" })
-    .range(from, to)
-    .order("status", { ascending: true });
-
-  return { vehicles, count };
-};

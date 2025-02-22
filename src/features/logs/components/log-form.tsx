@@ -39,9 +39,9 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { createNewLog } from "../actions/logs";
-import { getAvailableVehicle } from "../db/logs";
 import { LogSchema } from "../schemas/logs";
 import { Driver } from "@/features/drivers/schemas/drivers";
+import { getAvailableVehicle } from "../db/logs";
 
 type LogFormProps = {
   driver: Driver | null;

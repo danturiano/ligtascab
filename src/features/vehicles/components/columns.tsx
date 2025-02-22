@@ -14,7 +14,7 @@ const GenerateQRCode = dynamic(() => import("./generate-qr"), {
 });
 const VehicleDelete = dynamic(
   () => import("./vehicle-delete").then((mod) => mod.VehicleDelete),
-  { loading: () => <div>loading</div>, ssr: false },
+  { loading: () => <div>loading</div>, ssr: false }
 );
 
 export const columns: ColumnDef<Vehicle>[] = [

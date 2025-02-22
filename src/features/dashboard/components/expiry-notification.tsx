@@ -26,6 +26,7 @@ export default function ExpiryNotifications() {
       }
       return { notifications };
     },
+    refetchInterval: 320000,
   });
 
   return (

@@ -8,5 +8,5 @@ export const getNotifications = async () => {
     .from("will_expire")
     .select("*", { count: "exact" });
 
-  return { notifications, count };
+  return { notifications: notifications || [], count };
 };

@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PostgrestError } from "@supabase/supabase-js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ellipsis } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -39,15 +40,27 @@ export const OptionsColumn = ({ id, deleteFn, type }: OptionsColumnProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
+  const useDelete = useMutation({
+    mutationFn: deleteFn,
+  });
+
   const onDelete = () => {
     startTransition(async () => {
       const { toast } = await import("react-hot-toast");
-      const { error } = await deleteFn(id);
-      if (error) {
-        toast.error(error.message);
-      }
-      toast.success("Vehicle successfully deleted!");
-      setIsOpen(false);
+      useDelete.mutate(id, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [`${type}`],
+          });
+          toast.success(`${type} deleted successfully!`);
+          setIsOpen(false);
+        },
+        onError: () => {
+          toast.error(`${type} delation unsuccessful.`);
+        },
+      });
     });
   };
 

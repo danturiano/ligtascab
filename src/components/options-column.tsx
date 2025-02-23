@@ -19,12 +19,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PostgrestError } from "@supabase/supabase-js";
 import { Ellipsis } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { deleteVehicle } from "../db/vehicles";
 
-export const VehicleDelete = ({ id }: { id: string }) => {
+interface OptionsColumnProps {
+  id: string;
+  type: "vehicles" | "drivers";
+  deleteFn: (
+    id: string
+  ) => Promise<
+    { error: PostgrestError; data?: undefined } | { data: null; error: null }
+  >;
+}
+
+export const OptionsColumn = ({ id, deleteFn, type }: OptionsColumnProps) => {
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -32,10 +42,9 @@ export const VehicleDelete = ({ id }: { id: string }) => {
   const onDelete = () => {
     startTransition(async () => {
       const { toast } = await import("react-hot-toast");
-      const { error } = await deleteVehicle(id);
+      const { error } = await deleteFn(id);
       if (error) {
         toast.error(error.message);
-        return;
       }
       toast.success("Vehicle successfully deleted!");
       setIsOpen(false);
@@ -53,9 +62,9 @@ export const VehicleDelete = ({ id }: { id: string }) => {
             className="w-full"
             variant={"outline"}
             size={"sm"}
-            onClick={() => router.push(`/dashboard/vehicles/${id}`)}
+            onClick={() => router.push(`/dashboard/${type}/${id}`)}
           >
-            View Vehicle
+            View {type}
           </Button>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

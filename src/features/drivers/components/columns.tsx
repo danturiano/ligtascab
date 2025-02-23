@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Driver } from "../schemas/drivers";
+import { deleteDriver } from "../db/drivers";
 
 const ExpirySort = dynamic(() => import("./expiry-sort"), {
   loading: () => <div>loading</div>,
@@ -14,6 +15,10 @@ const ExpirySort = dynamic(() => import("./expiry-sort"), {
 });
 const GenerateQRCode = dynamic(
   () => import("@/features/vehicles/components/generate-qr"),
+  { loading: () => <div>loading</div>, ssr: false }
+);
+const OptionsColumn = dynamic(
+  () => import("@/components/options-column").then((mod) => mod.OptionsColumn),
   { loading: () => <div>loading</div>, ssr: false }
 );
 
@@ -75,5 +80,16 @@ export const columns: ColumnDef<Driver>[] = [
     accessorKey: "qr_code",
     header: "QR Code",
     cell: ({ row }) => <GenerateQRCode id={row.original.id as string} />,
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => (
+      <OptionsColumn
+        id={row.original.id as string}
+        deleteFn={deleteDriver}
+        type="drivers"
+      />
+    ),
   },
 ];

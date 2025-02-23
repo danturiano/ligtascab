@@ -16,6 +16,18 @@ export const createDriver = async (newDriver: Driver) => {
   return true;
 };
 
+export async function deleteDriver(id: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("drivers").delete().eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return { error };
+  }
+
+  return { data, error };
+}
+
 export const isDriverRegistered = async (license_number: string) => {
   const vehicles = await getAllDrivers();
   const isRegistered = vehicles.some(

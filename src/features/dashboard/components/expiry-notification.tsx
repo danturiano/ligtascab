@@ -37,7 +37,7 @@ export default function ExpiryNotifications() {
       }
       return { notifications };
     },
-    refetchInterval: 3000,
+    refetchInterval: 120000,
   });
 
   return (

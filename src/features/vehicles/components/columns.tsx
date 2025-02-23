@@ -6,14 +6,14 @@ import { formatDate } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
-import { Vehicle } from "../db/vehicles";
+import { deleteVehicle, Vehicle } from "../db/vehicles";
 
 const GenerateQRCode = dynamic(() => import("./generate-qr"), {
   loading: () => <div>loading</div>,
   ssr: false,
 });
-const VehicleDelete = dynamic(
-  () => import("./vehicle-delete").then((mod) => mod.VehicleDelete),
+const OptionsColumn = dynamic(
+  () => import("@/components/options-column").then((mod) => mod.OptionsColumn),
   { loading: () => <div>loading</div>, ssr: false }
 );
 
@@ -90,6 +90,12 @@ export const columns: ColumnDef<Vehicle>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => <VehicleDelete id={row.original.id as string} />,
+    cell: ({ row }) => (
+      <OptionsColumn
+        id={row.original.id as string}
+        deleteFn={deleteVehicle}
+        type="vehicles"
+      />
+    ),
   },
 ];

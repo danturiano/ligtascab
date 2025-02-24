@@ -2,9 +2,9 @@
 
 import {
   AlertDialog,
+  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -18,26 +18,38 @@ import {
 } from "@/components/ui/popover";
 import { Expiry } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, SquareUser } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { getNotifications } from "../db/dashboard";
+import { getNotifications, markAsRead } from "../db/dashboard";
 import image from "/public/no-notif.svg";
+import { useRouter } from "next/navigation";
+import placeholder from "/public/landscape-placeholder.svg";
 
 export default function ExpiryNotifications() {
   const [totalCount, setTotalCount] = useState(0);
+  const router = useRouter();
 
   const { data } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const { notifications, count } = await getNotifications();
-      if (count) {
-        setTotalCount(count);
+      const { notifications } = await getNotifications();
+      const newNotification = notifications.filter((item: Expiry) => {
+        return item.mark_as_read === false;
+      });
+      if (newNotification) {
+        setTotalCount(newNotification.length);
       }
       return { notifications };
     },
     refetchInterval: 120000,
+  });
+
+  const queryClient = useQueryClient();
+
+  const useMarkAsRead = useMutation({
+    mutationFn: markAsRead,
   });
 
   return (
@@ -58,14 +70,18 @@ export default function ExpiryNotifications() {
         align="start"
         className={`max-h-72 w-[19.3rem] shadow-none overflow-auto rounded-md bg-slate-50 ${!totalCount ? "absolute -left-11 items-center justify-center" : ""}`}
       >
-        {!!totalCount ? (
+        {data?.notifications ? (
           <div>
             {data?.notifications.map((item: Expiry) => {
               return (
                 <AlertDialog key={item.id}>
                   <AlertDialogTrigger asChild>
-                    <div className="m-2 rounded-md flex gap-3 p-1 hover:bg-slate-100 items-center cursor-pointer">
-                      <div className="size-9 rounded-full flex items-center justify-center border border-gray-400">
+                    <div
+                      className={`m-2 rounded-md flex gap-3 p-2 hover:bg-slate-100 items-center cursor-pointer ${!item.mark_as_read && "bg-slate-200 hover:bg-slate-300"}`}
+                    >
+                      <div
+                        className={`size-9 rounded-full flex items-center justify-center border border-gray-700 }`}
+                      >
                         {item.source_table === "drivers" ? (
                           <SquareUser size={19} color="#1F9E7F" />
                         ) : (
@@ -73,26 +89,53 @@ export default function ExpiryNotifications() {
                         )}
                       </div>
                       <div className="flex flex-col text-start">
-                        <p className="text-[13px] tracking-tight">
+                        <p
+                          className={`text-[13px] tracking-tight ${item.mark_as_read && "text-gray-500"}`}
+                        >
                           {`${!!item.full_name ? item.full_name + "'s license will expire soon." : item.plate_number + " registration will expire soon."}`}
                         </p>
-                        <p className="text-xs text-gray-500">{`${!!item.full_name ? "license will expire on " + formatDate(item.expiry_date.toLocaleString()) : "registration will expire on " + formatDate(item.expiry_date.toLocaleString())}`}</p>
+                        <p
+                          className={`text-xs ${item.mark_as_read && "text-gray-500"}`}
+                        >{`${!!item.full_name ? "license will expire on " + formatDate(item.expiry_date.toLocaleString()) : "registration will expire on " + formatDate(item.expiry_date.toLocaleString())}`}</p>
                       </div>
                     </div>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="w-72">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
-                      </AlertDialogDescription>
+                      <AlertDialogTitle>Information</AlertDialogTitle>
+                      <Image
+                        src={placeholder}
+                        className="rounded-md border-2 border-gray-500"
+                        alt="profile place holder"
+                      />
+                      <div className="flex flex-col space-y-2">
+                        <p className="text-sm">{`${!!item.full_name ? "Name: " + `${item.full_name}` : "Plate Number: " + `${item.plate_number}`}`}</p>
+                        <p className="text-sm">{`${!!item.full_name ? "License Expiry: " + formatDate(item.expiry_date.toLocaleString()) : "Registration Expiry: " + formatDate(item.expiry_date.toLocaleString())}`}</p>
+                      </div>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/${item.source_table}/${item.source_id}`
+                          )
+                        }
+                      >
+                        Go to Profile
+                      </AlertDialogAction>
+                      <AlertDialogCancel
+                        onClick={async () => {
+                          useMarkAsRead.mutate(item.id, {
+                            onSuccess: () => {
+                              queryClient.invalidateQueries({
+                                queryKey: ["notifications"],
+                              });
+                            },
+                          });
+                        }}
+                      >
+                        Cancel
+                      </AlertDialogCancel>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

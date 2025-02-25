@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/supabase/server";
-import { Driver } from "../schemas/drivers";
 import { cache } from "react";
+import { Driver } from "../schemas/drivers";
 
 export const createDriver = async (newDriver: Driver) => {
   const supabase = await createClient();
@@ -29,8 +29,11 @@ export async function deleteDriver(id: string) {
 }
 
 export const isDriverRegistered = async (license_number: string) => {
-  const vehicles = await getAllDrivers();
-  const isRegistered = vehicles.some(
+  const { drivers } = await getAllDrivers();
+  if (!drivers) {
+    return [];
+  }
+  const isRegistered = drivers.some(
     (driver) => driver.license_number === license_number
   );
 
@@ -48,14 +51,12 @@ export const getPaginatedDrivers = async (from: number, to: number) => {
   return { drivers, count };
 };
 
-export const getAllDrivers = cache(async (): Promise<Driver[]> => {
+export const getAllDrivers = cache(async () => {
   const supabase = await createClient();
-  const { data: vehicles, error } = await supabase.from("drivers").select("*");
+  const { data: drivers } = await supabase
+    .from("drivers")
+    .select("*")
+    .order("status", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching drivers:", error);
-    return [];
-  }
-
-  return vehicles ?? [];
+  return { drivers };
 });

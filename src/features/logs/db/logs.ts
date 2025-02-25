@@ -63,15 +63,10 @@ export const getAvailableVehicle = cache(async (): Promise<string[]> => {
 
 export const getAllLogs = cache(async (): Promise<Log[]> => {
   const supabase = await createClient();
-  const { data: logs, error } = await supabase
+  const { data: logs } = await supabase
     .from("driver_logs")
     .select("*")
     .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error(error);
-    return [];
-  }
 
   return logs ?? [];
 });

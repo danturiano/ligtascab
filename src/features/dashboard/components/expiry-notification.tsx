@@ -80,7 +80,7 @@ export default function ExpiryNotifications() {
                       className={`m-2 rounded-md flex gap-3 p-2 hover:bg-slate-100 items-center cursor-pointer ${!item.mark_as_read && "bg-slate-200 hover:bg-slate-300"}`}
                     >
                       <div
-                        className={`size-9 rounded-full flex items-center justify-center border border-gray-700 }`}
+                        className={`size-9 rounded-full flex items-center justify-center border ${item.mark_as_read === true ? "border-gray-300" : "border-gray-700"}`}
                       >
                         {item.source_table === "drivers" ? (
                           <SquareUser size={19} color="#1F9E7F" />

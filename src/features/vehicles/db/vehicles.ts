@@ -38,7 +38,10 @@ export const isVehicleRegistered = async (
   plate_number: string,
   registration_number: string
 ) => {
-  const vehicles = await getAllVehicle();
+  const { vehicles } = await getAllVehicle();
+  if (!vehicles) {
+    return [];
+  }
   const isRegistered = vehicles.some(
     (vehicle) =>
       vehicle.plate_number === plate_number ||
@@ -59,19 +62,14 @@ export const getPaginatedVehicles = async (from: number, to: number) => {
   return { vehicles, count };
 };
 
-export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
+export const getAllVehicle = cache(async () => {
   const supabase = await createClient();
-  const { data: vehicles, error } = await supabase
+  const { data: vehicles } = await supabase
     .from("vehicles")
-    .select("*")
+    .select("*", { count: "exact" })
     .order("status", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching drivers:", error);
-    return []; // Ensure the function never returns null
-  }
-
-  return vehicles ?? [];
+  return { vehicles };
 });
 
 export async function getVehicle(registration_number: string) {

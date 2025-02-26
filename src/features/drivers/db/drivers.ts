@@ -4,7 +4,7 @@ import { createClient } from "@/supabase/server";
 import { cache } from "react";
 import { Driver } from "../schemas/drivers";
 
-export const createDriver = async (newDriver: Driver) => {
+export const createDriver = async (newDriver: Driver): Promise<boolean> => {
   const supabase = await createClient();
   const { error } = await supabase.from("drivers").insert([newDriver]);
 
@@ -28,10 +28,12 @@ export async function deleteDriver(id: string) {
   return { data, error };
 }
 
-export const isDriverRegistered = async (license_number: string) => {
-  const { drivers } = await getAllDrivers();
+export const isDriverRegistered = async (
+  license_number: string
+): Promise<boolean> => {
+  const drivers = await getAllDrivers();
   if (!drivers) {
-    return [];
+    return false;
   }
   const isRegistered = drivers.some(
     (driver) => driver.license_number === license_number
@@ -40,23 +42,16 @@ export const isDriverRegistered = async (license_number: string) => {
   return isRegistered;
 };
 
-export const getPaginatedDrivers = async (from: number, to: number) => {
+export const getAllDrivers = cache(async (): Promise<Driver[]> => {
   const supabase = await createClient();
-  const { data: drivers, count } = await supabase
-    .from("drivers")
-    .select("*", { count: "exact" })
-    .range(from, to)
-    .order("status", { ascending: true });
-
-  return { drivers, count };
-};
-
-export const getAllDrivers = cache(async () => {
-  const supabase = await createClient();
-  const { data: drivers } = await supabase
+  const { data: drivers, error } = await supabase
     .from("drivers")
     .select("*")
     .order("status", { ascending: true });
 
-  return { drivers };
+  if (error) {
+    throw new Error("Error fetching drivers", error);
+  }
+
+  return drivers || [];
 });

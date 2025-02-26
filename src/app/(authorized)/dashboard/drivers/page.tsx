@@ -1,5 +1,6 @@
 "use client";
 
+import DataTableSkeleton from "@/components/data-table-skeleton";
 import { AddDriver } from "@/features/drivers/components/add-driver";
 import { columns } from "@/features/drivers/components/columns";
 import { getAllDrivers } from "@/features/drivers/db/drivers";
@@ -16,6 +17,7 @@ const DataTable = dynamic<{
   isPending: boolean;
 }>(() => import("@/components/data-table").then((mod) => mod.DataTable), {
   ssr: false,
+  loading: () => <DataTableSkeleton />,
 });
 
 const DriverForm = dynamic(
@@ -24,19 +26,24 @@ const DriverForm = dynamic(
 );
 
 export default function DriverPage() {
-  const { data, isPending } = useQuery({
+  const {
+    data: drivers,
+    isPending,
+    error,
+  } = useQuery({
     queryKey: ["drivers"],
-    queryFn: async () => {
-      const { drivers } = await getAllDrivers();
-      return { drivers };
-    },
+    queryFn: getAllDrivers,
   });
+
+  if (error) {
+    return <div>Error loading drivers: {error.message}</div>;
+  }
 
   return (
     <div>
       <h1 className="text-xl font-semibold">Drivers</h1>
       <DataTable
-        data={data?.drivers ?? []}
+        data={drivers ?? []}
         columns={columns}
         filter_by="last_name"
         isPending={isPending}

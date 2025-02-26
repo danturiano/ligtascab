@@ -1,5 +1,6 @@
 "use client";
 
+import DataTableSkeleton from "@/components/data-table-skeleton";
 import { AddVehicle } from "@/features/vehicles/components/add-vehicle";
 import { columns } from "@/features/vehicles/components/columns";
 import { getAllVehicle, Vehicle } from "@/features/vehicles/db/vehicles";
@@ -15,6 +16,7 @@ const DataTable = dynamic<{
   isPending: boolean;
 }>(() => import("@/components/data-table").then((mod) => mod.DataTable), {
   ssr: false,
+  loading: () => <DataTableSkeleton />,
 });
 
 const VehicleForm = dynamic(
@@ -23,19 +25,24 @@ const VehicleForm = dynamic(
 );
 
 export default function VehiclePage() {
-  const { data, isPending } = useQuery({
+  const {
+    data: vehicles,
+    isPending,
+    error,
+  } = useQuery({
     queryKey: ["vehicles"],
-    queryFn: async () => {
-      const { vehicles } = await getAllVehicle();
-      return { vehicles };
-    },
+    queryFn: getAllVehicle,
   });
+
+  if (error) {
+    return <div>Error loading vehicles: {error.message}</div>;
+  }
 
   return (
     <div className="w-full">
       <h1 className="text-xl font-semibold">Tricycles</h1>
       <DataTable
-        data={data?.vehicles ?? []}
+        data={vehicles ?? []}
         columns={columns}
         filter_by={"plate_number"}
         isPending={isPending}

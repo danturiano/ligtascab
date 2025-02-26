@@ -1,5 +1,6 @@
 "use client";
 
+import DataTableSkeleton from "@/components/data-table-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { columns } from "@/features/logs/components/columns";
 import { getAllLogs } from "@/features/logs/db/logs";
@@ -8,12 +9,11 @@ import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";
 
-// Dynamically import QRCodeReader
 const QRCodeReader = dynamic(
   () => import("@/features/logs/components/qr-reader"),
   {
-    ssr: false, // Prevents server-side rendering
-    loading: () => <Skeleton className="min-w-sm rounded-xl" />,
+    ssr: false,
+    loading: () => <Skeleton className="mt-2 min-w-sm rounded-xl" />,
   }
 );
 
@@ -25,16 +25,22 @@ const DataTable = dynamic<{
   isPending: boolean;
 }>(() => import("@/components/data-table").then((mod) => mod.DataTable), {
   ssr: false,
+  loading: () => <DataTableSkeleton />,
 });
 
 export default function DriverLogPage() {
-  const { data, isPending } = useQuery({
+  const {
+    data: logs,
+    isPending,
+    error,
+  } = useQuery({
     queryKey: ["driver_logs"],
-    queryFn: async () => {
-      const logs = await getAllLogs();
-      return logs;
-    },
+    queryFn: getAllLogs,
   });
+
+  if (error) {
+    return <div>Error loading logs: {error.message}</div>;
+  }
 
   return (
     <div>
@@ -42,7 +48,7 @@ export default function DriverLogPage() {
       <div className="w-full md:flex-row md:flex md:gap-6">
         <QRCodeReader />
         <DataTable
-          data={data ?? []}
+          data={logs ?? []}
           columns={columns}
           filter_by="driver_name"
           isPending={isPending}

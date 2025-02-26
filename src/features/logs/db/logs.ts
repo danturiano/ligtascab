@@ -4,8 +4,9 @@ import { Driver } from "@/features/drivers/schemas/drivers";
 import { createClient } from "@/supabase/server";
 import { cache } from "react";
 import { Log } from "../schemas/logs";
+import { Vehicle } from "@/features/vehicles/db/vehicles";
 
-export const getDriver = async (id: string): Promise<Driver> => {
+export const getDriver = async (id: string): Promise<Driver | null> => {
   const supabase = await createClient();
   const { data: driver, error } = await supabase
     .from("drivers")
@@ -14,22 +15,16 @@ export const getDriver = async (id: string): Promise<Driver> => {
     .single();
 
   if (error) {
-    return {
-      status: "",
-      first_name: "",
-      id: "",
-      last_name: "",
-      license_expiry: new Date(0),
-      license_number: "",
-      operator_id: "",
-      phone_number: "",
-    };
+    console.error("Error fetching driver:", error);
+    return null;
   }
 
   return driver;
 };
 
-export const getDriverPlateNumber = async (id: string) => {
+export const getDriverPlateNumber = async (
+  id: string
+): Promise<string | null> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("driver_logs")
@@ -40,35 +35,41 @@ export const getDriverPlateNumber = async (id: string) => {
 
   if (error) {
     console.error("Error fetching driver plate number:", error);
-    return { error: error.message };
+    return null;
   }
 
   return data[0].plate_number;
 };
 
-export const getAvailableVehicle = cache(async (): Promise<string[]> => {
-  const supabase = await createClient();
-  const { data: vehicles, error } = await supabase
-    .from("vehicles")
-    .select("plate_number")
-    .eq("status", "inactive");
+export const getAvailableVehicle = cache(
+  async (): Promise<Vehicle["plate_number"][]> => {
+    const supabase = await createClient();
+    const { data: vehicles, error } = await supabase
+      .from("vehicles")
+      .select("plate_number")
+      .eq("status", "inactive");
 
-  if (error) {
-    console.error("Error fetching vehicles:", error);
-    return [];
+    if (error) {
+      console.error("Error fetching vehicles:", error);
+      return [];
+    }
+
+    return vehicles?.map((vehicle) => vehicle.plate_number) ?? [];
   }
-
-  return vehicles?.map((vehicle) => vehicle.plate_number) ?? [];
-});
+);
 
 export const getAllLogs = cache(async (): Promise<Log[]> => {
   const supabase = await createClient();
-  const { data: logs } = await supabase
+  const { data: logs, error } = await supabase
     .from("driver_logs")
     .select("*")
     .order("created_at", { ascending: false });
 
-  return logs ?? [];
+  if (error) {
+    throw new Error("Error fetching logs", error);
+  }
+
+  return logs || [];
 });
 
 export const checkDriverStatus = async (id: string): Promise<boolean> => {
@@ -87,21 +88,10 @@ export const checkDriverStatus = async (id: string): Promise<boolean> => {
   return true;
 };
 
-export const getPaginatedLogs = async (from: number, to: number) => {
-  const supabase = await createClient();
-  const { data: logs, count } = await supabase
-    .from("driver_logs")
-    .select("*", { count: "exact" })
-    .range(from, to)
-    .order("created_at", { ascending: false });
-
-  return { logs, count };
-};
-
 export const updateVehicleStatus = async (
   plate_number: string,
   status: string
-) => {
+): Promise<boolean> => {
   const supabase = await createClient();
   const { error } = await supabase
     .from("vehicles")

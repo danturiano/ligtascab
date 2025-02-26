@@ -31,17 +31,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Driver } from "@/features/drivers/schemas/drivers";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronsUpDown } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { createNewLog } from "../actions/logs";
-import { LogSchema } from "../schemas/logs";
-import { Driver } from "@/features/drivers/schemas/drivers";
 import { getAvailableVehicle } from "../db/logs";
+import { LogSchema } from "../schemas/logs";
 
 type LogFormProps = {
   driver: Driver | null;
@@ -49,10 +50,10 @@ type LogFormProps = {
 
 export default function LogForm({ driver }: LogFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [vehicles, setVehicles] = useState<string[]>([]);
-  const [open, setOpen] = useState(false);
+  const [vehiclesPlateNumber, setVehiclesPlateNumber] = useState<string[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isTimeOut, setIsTimeOut] = useState(false);
+  const [isTimeOut, setIsTimeOut] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof LogSchema>>({
     resolver: zodResolver(LogSchema),
@@ -73,32 +74,27 @@ export default function LogForm({ driver }: LogFormProps) {
   });
 
   useEffect(() => {
+    if (!driver) return;
     if (driver) {
+      console.log("has driver");
       const driver_name = `${driver.first_name} ${driver.last_name}`;
       form.setValue("driver_name", driver_name);
       form.setValue("driver", driver);
     }
-    console.log(form.getValues());
   }, [driver, form]);
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchVehicles = async () => {
-      if (!open) return;
+  const {} = useQuery({
+    queryKey: ["fetch_vehicles", open],
+    queryFn: async () => {
+      if (!open) return []; // Return empty array instead of undefined
+      console.log("this fetch runs");
       const availableVehicles = await getAvailableVehicle();
-      setVehicles(availableVehicles);
-    };
-
-    fetchVehicles();
-
-    return () => controller.abort();
-  }, [open]);
-
-  const logType = form.watch("log_type");
-  if (logType === "Time-out") {
-    form.setValue("plate_number", "");
-  }
+      setVehiclesPlateNumber(availableVehicles);
+      return availableVehicles;
+    },
+    // Only fetch when popover is open
+    enabled: open,
+  });
 
   const onSubmit = async (data: z.infer<typeof LogSchema>) => {
     startTransition(async () => {
@@ -106,7 +102,7 @@ export default function LogForm({ driver }: LogFormProps) {
       if (response.message) {
         toast.success(response.message);
         form.reset();
-        setVehicles([]);
+        setVehiclesPlateNumber([]);
       }
       if (response.error) {
         toast.error(response.error);
@@ -145,7 +141,7 @@ export default function LogForm({ driver }: LogFormProps) {
                       <FormControl>
                         <Button
                           variant="outline"
-                          disabled={logType === "Time-out"}
+                          disabled={form.getValues("log_type") === "Time-out"}
                           role="combobox"
                           className={cn(
                             "w-full justify-between",
@@ -153,7 +149,7 @@ export default function LogForm({ driver }: LogFormProps) {
                           )}
                         >
                           {field.value
-                            ? vehicles.find(
+                            ? vehiclesPlateNumber.find(
                                 (vehicle) => vehicle === field.value
                               )
                             : "Select vehicle"}
@@ -167,7 +163,7 @@ export default function LogForm({ driver }: LogFormProps) {
                         <CommandList>
                           <CommandEmpty>No vehicle found.</CommandEmpty>
                           <CommandGroup>
-                            {vehicles.map((vehicle) => (
+                            {vehiclesPlateNumber.map((vehicle) => (
                               <CommandItem
                                 value={vehicle}
                                 key={vehicle}

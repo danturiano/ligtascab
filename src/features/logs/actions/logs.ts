@@ -36,9 +36,8 @@ export async function createNewLog(DriverLog: unknown) {
 
     const status = `${result.data.log_type === "Time-in" ? "active" : "inactive"}`;
 
-    console.log(log);
-
     if (log.log_type === "Time-out") {
+      result.data.plate_number = "";
       const isActive = await checkDriverStatus(log.driver_id);
       if (!isActive) {
         return { error: "Driver is not active." };

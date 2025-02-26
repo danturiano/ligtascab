@@ -37,10 +37,10 @@ export async function deleteVehicle(id: string) {
 export const isVehicleRegistered = async (
   plate_number: string,
   registration_number: string
-) => {
-  const { vehicles } = await getAllVehicle();
+): Promise<boolean> => {
+  const vehicles = await getAllVehicle();
   if (!vehicles) {
-    return [];
+    return false;
   }
   const isRegistered = vehicles.some(
     (vehicle) =>
@@ -51,28 +51,23 @@ export const isVehicleRegistered = async (
   return isRegistered;
 };
 
-export const getPaginatedVehicles = async (from: number, to: number) => {
+export const getAllVehicle = cache(async (): Promise<Vehicle[]> => {
   const supabase = await createClient();
-  const { data: vehicles, count } = await supabase
-    .from("vehicles")
-    .select("*", { count: "exact" })
-    .range(from, to)
-    .order("status", { ascending: true });
-
-  return { vehicles, count };
-};
-
-export const getAllVehicle = cache(async () => {
-  const supabase = await createClient();
-  const { data: vehicles } = await supabase
+  const { data: vehicles, error } = await supabase
     .from("vehicles")
     .select("*", { count: "exact" })
     .order("status", { ascending: true });
 
-  return { vehicles };
+  if (error) {
+    throw new Error("Error fetching vehicles:", error);
+  }
+
+  return vehicles ?? [];
 });
 
-export async function getVehicle(registration_number: string) {
+export async function getVehicle(
+  registration_number: string
+): Promise<Vehicle> {
   const supabase = await createClient();
   const { data: vehicle, error } = await supabase
     .from("vehicles")
@@ -81,8 +76,8 @@ export async function getVehicle(registration_number: string) {
     .single();
 
   if (error) {
-    console.error("Error fetching drivers:", error);
+    throw new Error("Error fetching vehicle:", error);
   }
 
-  return { vehicle, error };
+  return vehicle;
 }

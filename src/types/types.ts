@@ -13,6 +13,16 @@ export const DriverSchema = z.object({
 
 export type Driver = z.infer<typeof DriverSchema>;
 
+export type Expiry = {
+  id: number;
+  source_table: string;
+  source_id: string;
+  expiry_date: Date;
+  mark_as_read: boolean;
+  plate_number?: string;
+  full_name?: null;
+};
+
 export type Vehicle = {
   id?: string;
   operator_id?: string;

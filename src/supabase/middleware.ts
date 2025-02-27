@@ -30,8 +30,27 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // refreshing the auth token
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const publicRoutes = ["/sign-in", "/sign-up", "/"];
+
+  const { pathname } = request.nextUrl;
+
+  if (user && publicRoutes.includes(pathname)) {
+    // Authenticated users should not access public pages
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (!user && pathname.startsWith("/dashboard")) {
+    // Unauthenticated users should be redirected to sign-in if trying to access anything under /dashboard
+    const url = request.nextUrl.clone();
+    url.pathname = "/sign-in";
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }

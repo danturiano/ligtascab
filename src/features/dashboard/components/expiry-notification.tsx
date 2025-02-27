@@ -16,7 +16,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Expiry } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileText, SquareUser } from "lucide-react";
@@ -26,6 +25,7 @@ import { getNotifications, markAsRead } from "../db/dashboard";
 import image from "/public/no-notif.svg";
 import { useRouter } from "next/navigation";
 import placeholder from "/public/landscape-placeholder.svg";
+import { Expiry } from "@/types/types";
 
 export default function ExpiryNotifications() {
   const [totalCount, setTotalCount] = useState(0);

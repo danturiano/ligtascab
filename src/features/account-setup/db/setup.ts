@@ -28,7 +28,7 @@ export async function updateUser(userUpdate: UserUpdate) {
   }
 
   const { error: errorUp } = await supabase.auth.updateUser({
-    data: { is_new_user: false },
+    data: { ...userUpdate },
   });
 
   if (errorUp) {

@@ -1,6 +1,12 @@
+import { createClient } from "@/supabase/server";
+
 export default async function Page() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <h1>Hi, {data.user?.user_metadata.first_name}!</h1>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <div className="aspect-video rounded-xl bg-muted/50" />
         <div className="aspect-video rounded-xl bg-muted/50" />

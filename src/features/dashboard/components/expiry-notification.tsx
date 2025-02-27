@@ -35,7 +35,7 @@ export default function ExpiryNotifications() {
     queryKey: ["notifications"],
     queryFn: async () => {
       const { notifications } = await getNotifications();
-      const newNotification = notifications.filter((item: Expiry) => {
+      const newNotification = notifications?.filter((item: Expiry) => {
         return item.mark_as_read === false;
       });
       if (newNotification) {
@@ -70,7 +70,7 @@ export default function ExpiryNotifications() {
         align="start"
         className={`max-h-72 w-[19.3rem] shadow-none overflow-auto rounded-md bg-slate-50 ${!totalCount ? "absolute -left-11 items-center justify-center" : ""}`}
       >
-        {data?.notifications ? (
+        {data?.notifications && data?.notifications.length > 0 ? (
           <div>
             {data?.notifications.map((item: Expiry) => {
               return (

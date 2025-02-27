@@ -22,8 +22,8 @@ export async function updateProfile(User: unknown) {
     first_name: result.data.first_name,
     last_name: result.data.last_name,
     email: result.data.email,
-    subscribe_newsletter: result.data.subscribe,
-    isNewUser: false,
+    subscribe_to_newsletter: result.data.subscribe,
+    is_new_user: false,
   };
 
   await updateUser(userProfile);

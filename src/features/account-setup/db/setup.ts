@@ -1,30 +1,39 @@
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 
 type UserUpdate = {
   first_name: string;
   last_name: string;
   email: string;
-  subscribe_newsletter: boolean;
-  isNewUser: boolean;
+  subscribe_to_newsletter: boolean;
+  is_new_user: boolean;
   image?: string;
 };
 
 export async function updateUser(userUpdate: UserUpdate) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const phone_number = user?.phone as string;
+  const phone = user?.phone as string;
 
   const { data, error } = await supabase
-    .from("users")
+    .from("operators")
     .update(userUpdate)
-    .eq("phone_number", phone_number);
+    .eq("phone", phone);
 
   if (error) {
     console.log(error);
     throw new Error("User could not be created");
+  }
+
+  const { error: errorUp } = await supabase.auth.updateUser({
+    data: { is_new_user: false },
+  });
+
+  if (errorUp) {
+    console.log(errorUp);
+    throw new Error("User could not be updated");
   }
 
   return { data, error };

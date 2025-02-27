@@ -52,20 +52,15 @@ export async function register(User: unknown) {
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
     phone: result.data.phone_number,
     password: result.data.password,
+    options: {
+      data: {
+        is_new_user: true,
+      },
+    },
   });
   if (signUpError) {
     console.log(signUpError);
     return { error: signUpError.message };
-  }
-  // Check if user_data entry exists and create i
-  const { error: insertError } = await supabase
-    .from("users")
-    .insert({ user_id: signUpData?.user?.id });
-
-  if (insertError) {
-    console.error("Error creating user_data entry:", insertError);
-    return { error: "Cannot create account" };
-    // Consider how you want to handle this error
   }
 
   return { message: "Account created sucessfully" };

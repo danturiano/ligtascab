@@ -38,17 +38,33 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (user && publicRoutes.includes(pathname)) {
-    // Authenticated users should not access public pages
+  if (
+    !user &&
+    (pathname.startsWith("/dashboard") || pathname.startsWith("/account-setup"))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sign-in";
+    return NextResponse.redirect(url);
+  }
+
+  if (user?.user_metadata?.is_new_user && pathname.startsWith("/dashboard")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/account-setup";
+    return NextResponse.redirect(url);
+  }
+
+  if (
+    !user?.user_metadata?.is_new_user &&
+    pathname.startsWith("/account-setup")
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
-
-  if (!user && pathname.startsWith("/dashboard")) {
-    // Unauthenticated users should be redirected to sign-in if trying to access anything under /dashboard
+  if (user && publicRoutes.includes(pathname)) {
+    // Authenticated users should not access public pages
     const url = request.nextUrl.clone();
-    url.pathname = "/sign-in";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 

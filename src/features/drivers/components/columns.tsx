@@ -6,17 +6,17 @@ import { formatDate } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
-import { Driver } from "../schemas/drivers";
 import { deleteDriver } from "../db/drivers";
+import { Driver } from "@/types/types";
 
 const ExpirySort = dynamic(() => import("./expiry-sort"), {
   loading: () => <div>loading</div>,
   ssr: false,
 });
-const GenerateQRCode = dynamic(
-  () => import("@/features/vehicles/components/generate-qr"),
-  { loading: () => <div>loading</div>, ssr: false }
-);
+const GenerateQRCode = dynamic(() => import("@/components/generate-qr"), {
+  loading: () => <div>loading</div>,
+  ssr: false,
+});
 const OptionsColumn = dynamic(
   () => import("@/components/options-column").then((mod) => mod.OptionsColumn),
   { loading: () => <div>loading</div>, ssr: false }

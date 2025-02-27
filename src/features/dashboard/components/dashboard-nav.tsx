@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "./brand-logo";
 import NotificationDashboard from "./notification";
 import SearchBar from "./search-bar";
-import { signOut } from "@/features/drivers/actions/drivers";
+import { signOut } from "../actions/dashboard";
 
 export default function Navigation() {
   return (

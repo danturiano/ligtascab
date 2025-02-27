@@ -26,8 +26,8 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { registerDriver } from "../actions/drivers";
-import { DriverSchema } from "../schemas/drivers";
 import toast from "react-hot-toast";
+import { DriverSchema } from "@/types/types";
 
 export default function DriverForm() {
   const [isPending, startTransition] = useTransition();

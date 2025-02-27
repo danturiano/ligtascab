@@ -1,6 +1,6 @@
 import React from "react";
-import SectionHeader from "./SectionHeader";
-import FeatureCard from "./FeatureCard";
+import SectionHeader from "./section-header";
+import FeatureCard from "./feature-card";
 import { Bell, HandCoins, QrCode } from "lucide-react";
 
 export default function FeatureSection() {

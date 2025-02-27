@@ -1,4 +1,4 @@
-import { DriverSchema } from "@/features/drivers/schemas/drivers";
+import { DriverSchema } from "@/types/types";
 import { z } from "zod";
 
 export const LogSchema = z.object({

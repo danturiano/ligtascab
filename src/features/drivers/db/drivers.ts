@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/supabase/server";
+import { Driver } from "@/types/types";
 import { cache } from "react";
-import { Driver } from "../schemas/drivers";
 
 export const createDriver = async (newDriver: Driver): Promise<boolean> => {
   const supabase = await createClient();

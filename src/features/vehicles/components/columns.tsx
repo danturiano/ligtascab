@@ -8,10 +8,13 @@ import { ArrowUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { deleteVehicle, Vehicle } from "../db/vehicles";
 
-const GenerateQRCode = dynamic(() => import("./generate-qr"), {
-  loading: () => <div>loading</div>,
-  ssr: false,
-});
+const GenerateQRCode = dynamic(
+  () => import("../../../components/generate-qr"),
+  {
+    loading: () => <div>loading</div>,
+    ssr: false,
+  }
+);
 const OptionsColumn = dynamic(
   () => import("@/components/options-column").then((mod) => mod.OptionsColumn),
   { loading: () => <div>loading</div>, ssr: false }

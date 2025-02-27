@@ -2,15 +2,8 @@
 
 import { formatDate } from "@/lib/utils";
 import { createClient } from "@/supabase/server";
-import { redirect } from "next/navigation";
 import { createDriver, isDriverRegistered } from "../db/drivers";
-import { DriverSchema } from "../schemas/drivers";
-
-export const signOut = async () => {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/sign-in");
-};
+import { DriverSchema } from "@/types/types";
 
 export async function registerDriver(Driver: unknown) {
   const supabase = await createClient();

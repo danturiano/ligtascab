@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Driver } from "@/features/drivers/schemas/drivers";
-import { Vehicle } from "@/features/vehicles/db/vehicles";
 import { isExpiringWithinMonth } from "@/lib/utils";
 import { createClient } from "@/supabase/client";
+import { Driver, Vehicle } from "@/types/types";
 
 export const useExpiryCheck = () => {
   const [expiringItems, setExpiringItems] = useState<{

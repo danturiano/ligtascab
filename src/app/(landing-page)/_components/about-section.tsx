@@ -1,5 +1,5 @@
 import React from "react";
-import SectionHeader from "./SectionHeader";
+import SectionHeader from "./section-header";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import phone from "/public/about-img.svg";

@@ -1,6 +1,6 @@
 import React from "react";
-import SectionHeader from "./SectionHeader";
-import { AccordionDemo } from "./Accordion";
+import SectionHeader from "./section-header";
+import { AccordionDemo } from "./accordion";
 
 export default function FAQSection() {
   return (

@@ -31,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Driver } from "@/features/drivers/schemas/drivers";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
@@ -43,6 +42,7 @@ import { z } from "zod";
 import { createNewLog } from "../actions/logs";
 import { getAvailableVehicle } from "../db/logs";
 import { LogSchema } from "../schemas/logs";
+import { Driver } from "@/types/types";
 
 type LogFormProps = {
   driver: Driver | null;

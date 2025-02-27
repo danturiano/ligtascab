@@ -4,7 +4,7 @@ import DataTableSkeleton from "@/components/data-table-skeleton";
 import { AddDriver } from "@/features/drivers/components/add-driver";
 import { columns } from "@/features/drivers/components/columns";
 import { getAllDrivers } from "@/features/drivers/db/drivers";
-import { Driver } from "@/features/drivers/schemas/drivers";
+import { Driver } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import dynamic from "next/dynamic";

@@ -115,6 +115,17 @@ const AppHeader = () => {
                 item.title.charAt(0).toUpperCase() + item.title.slice(1);
               return (
                 <Link key={item.title} href={item.url} className="relative">
+                  {path.startsWith(item.pathname) && (
+                    <div
+                      className="absolute bottom-0 w-full px-3"
+                      style={{
+                        transform: "none",
+                        transformOrigin: "50% 50% 0px",
+                      }}
+                    >
+                      <div className="h-0.5 bg-black"></div>
+                    </div>
+                  )}
                   <div
                     className={`mx-1 my-1.5 rounded-md px-3 py-1.5 transition-all duration-75 ${
                       path.startsWith(item.pathname)
@@ -131,17 +142,6 @@ const AppHeader = () => {
                     >
                       {title}
                     </p>
-                    {path.startsWith(item.pathname) && (
-                      <div
-                        className="absolute bottom-0 w-[80%]"
-                        style={{
-                          transform: "none",
-                          transformOrigin: "50% 50% 0px",
-                        }}
-                      >
-                        <div className="h-0.5 bg-black"></div>
-                      </div>
-                    )}
                   </div>
                 </Link>
               );

@@ -9,6 +9,7 @@ export const DriverSchema = z.object({
   license_number: z.string(),
   operator_id: z.string().optional(),
   phone_number: z.string(),
+  image: z.string().optional(),
 });
 
 export type Driver = z.infer<typeof DriverSchema>;

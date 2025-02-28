@@ -4,6 +4,22 @@ import { createClient } from "@/supabase/server";
 import { Driver } from "@/types/types";
 import { cache } from "react";
 
+export const getDriver = async (id: string): Promise<Driver | null> => {
+  const supabase = await createClient();
+  const { data: driver, error } = await supabase
+    .from("drivers")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching driver:", error);
+    return null;
+  }
+
+  return driver;
+};
+
 export const createDriver = async (newDriver: Driver): Promise<boolean> => {
   const supabase = await createClient();
   const { error } = await supabase.from("drivers").insert([newDriver]);

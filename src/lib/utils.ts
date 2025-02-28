@@ -14,7 +14,7 @@ export async function saltAndHashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(
   inputPassword: string,
-  storedHashString: string,
+  storedHashString: string
 ): Promise<boolean> {
   try {
     const [salt, storedHash] = storedHashString.split(":");
@@ -26,7 +26,7 @@ export async function verifyPassword(
       salt,
       1000,
       64,
-      "sha512",
+      "sha512"
     ).toString("hex");
 
     // Compare the generated hash with stored hash
@@ -47,6 +47,21 @@ export function formatDate(dateString: string): string {
   };
 
   return date.toLocaleDateString("en-US", options);
+}
+
+export function formatPhoneNumber(number: number | string) {
+  // Ensure the input is a string
+  number = number.toString();
+
+  // Validate the input format
+  if (!/^0\d{10}$/.test(number)) {
+    throw new Error("Invalid phone number format");
+  }
+
+  // Replace leading 0 with +63 and format the output
+  const formatted = `(+63) ${number.slice(1, 4)}-${number.slice(4, 7)}-${number.slice(7)}`;
+
+  return formatted;
 }
 
 export function formatDateTime(timestamp: string): string {

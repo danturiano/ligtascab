@@ -5,11 +5,10 @@ export const DriverSchema = z.object({
   first_name: z.string(),
   id: z.string().uuid().optional(),
   last_name: z.string(),
-  license_expiry: z.date(),
+  license_expiry: z.union([z.date(), z.string()]),
   license_number: z.string(),
   operator_id: z.string().optional(),
   phone_number: z.string(),
-  image: z.string().optional(),
 });
 
 export type Driver = z.infer<typeof DriverSchema>;

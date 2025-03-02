@@ -55,6 +55,8 @@ export default function LogForm({ driver }: LogFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTimeOut, setIsTimeOut] = useState<boolean>(false);
 
+  console.log("driver", driver);
+
   const form = useForm<z.infer<typeof LogSchema>>({
     resolver: zodResolver(LogSchema),
     defaultValues: {
@@ -62,10 +64,11 @@ export default function LogForm({ driver }: LogFormProps) {
         first_name: "",
         id: "",
         last_name: "",
-        license_expiry: new Date(0),
+        license_expiry: undefined,
         license_number: "",
         operator_id: "",
         phone_number: "",
+        status: "",
       },
       driver_name: driver ? `${driver.first_name} ${driver.last_name}` : "",
       plate_number: "",
@@ -74,7 +77,6 @@ export default function LogForm({ driver }: LogFormProps) {
   });
 
   useEffect(() => {
-    if (!driver) return;
     if (driver) {
       console.log("has driver");
       const driver_name = `${driver.first_name} ${driver.last_name}`;
@@ -109,6 +111,8 @@ export default function LogForm({ driver }: LogFormProps) {
       }
     });
   };
+
+  // console.log(form.formState.errors);
 
   return (
     <div className="md:w-[384px]">

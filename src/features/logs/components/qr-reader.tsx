@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import LogForm from "./log-form";
 import { getDriver } from "../db/logs";
@@ -9,6 +9,7 @@ import { Driver } from "@/types/types";
 
 const QRCodeReader = () => {
   const [driver, setDriver] = useState<Driver | null>(null);
+  const canScanRef = useRef(true);
 
   const fetchDriver = async (id: string) => {
     try {
@@ -24,9 +25,14 @@ const QRCodeReader = () => {
       <Card>
         <QrReader
           onResult={async (result) => {
-            if (result) {
+            if (result && canScanRef.current) {
+              canScanRef.current = false;
               const scannedQR = result.getText();
-              fetchDriver(scannedQR);
+              await fetchDriver(scannedQR);
+
+              setTimeout(() => {
+                canScanRef.current = true;
+              }, 1000);
             }
           }}
           constraints={{

@@ -49,7 +49,7 @@ export async function register(User: unknown) {
 
   const supabase = await createClient();
 
-  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  const { error: signUpError } = await supabase.auth.signUp({
     phone: result.data.phone_number,
     password: result.data.password,
     options: {

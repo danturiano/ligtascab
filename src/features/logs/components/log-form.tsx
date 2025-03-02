@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronsUpDown } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -50,12 +50,11 @@ type LogFormProps = {
 
 export default function LogForm({ driver }: LogFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [vehiclesPlateNumber, setVehiclesPlateNumber] = useState<string[]>([]);
-  const [open, setOpen] = useState<boolean>(false);
+  // const [open, setOpen] = useState<boolean>(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTimeOut, setIsTimeOut] = useState<boolean>(false);
 
-  console.log("driver", driver);
+  console.log(driver);
 
   const form = useForm<z.infer<typeof LogSchema>>({
     resolver: zodResolver(LogSchema),
@@ -64,11 +63,12 @@ export default function LogForm({ driver }: LogFormProps) {
         first_name: "",
         id: "",
         last_name: "",
-        license_expiry: undefined,
+        license_expiry: new Date(0),
         license_number: "",
         operator_id: "",
         phone_number: "",
         status: "",
+        image: "",
       },
       driver_name: driver ? `${driver.first_name} ${driver.last_name}` : "",
       plate_number: "",
@@ -78,41 +78,46 @@ export default function LogForm({ driver }: LogFormProps) {
 
   useEffect(() => {
     if (driver) {
-      console.log("has driver");
+      driver.license_expiry = new Date(driver.license_expiry);
       const driver_name = `${driver.first_name} ${driver.last_name}`;
       form.setValue("driver_name", driver_name);
       form.setValue("driver", driver);
     }
   }, [driver, form]);
 
-  const {} = useQuery({
-    queryKey: ["fetch_vehicles", open],
+  const { data: plate_numbers } = useQuery({
+    queryKey: ["fetch_vehicles"],
     queryFn: async () => {
-      if (!open) return []; // Return empty array instead of undefined
-      console.log("this fetch runs");
+      if (!open) return [];
       const availableVehicles = await getAvailableVehicle();
-      setVehiclesPlateNumber(availableVehicles);
       return availableVehicles;
     },
-    // Only fetch when popover is open
-    enabled: open,
+  });
+
+  const queryClient = useQueryClient();
+
+  const useCreateNewLog = useMutation({
+    mutationFn: createNewLog,
   });
 
   const onSubmit = async (data: z.infer<typeof LogSchema>) => {
-    startTransition(async () => {
-      const response = await createNewLog(data);
-      if (response.message) {
-        toast.success(response.message);
-        form.reset();
-        setVehiclesPlateNumber([]);
-      }
-      if (response.error) {
-        toast.error(response.error);
-      }
+    startTransition(() => {
+      useCreateNewLog.mutate(data, {
+        onSuccess: (response) => {
+          queryClient.invalidateQueries({
+            queryKey: ["driver_logs"],
+          });
+          if (response?.message) {
+            toast.success(response.message);
+            form.reset();
+          }
+          if (response?.error) {
+            toast.error(response.error);
+          }
+        },
+      });
     });
   };
-
-  // console.log(form.formState.errors);
 
   return (
     <div className="md:w-[384px]">
@@ -140,7 +145,7 @@ export default function LogForm({ driver }: LogFormProps) {
                   <FormLabel className="mb-1">
                     Select Available Vehicle
                   </FormLabel>
-                  <Popover open={open} onOpenChange={setOpen}>
+                  <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -153,7 +158,7 @@ export default function LogForm({ driver }: LogFormProps) {
                           )}
                         >
                           {field.value
-                            ? vehiclesPlateNumber.find(
+                            ? plate_numbers?.find(
                                 (vehicle) => vehicle === field.value
                               )
                             : "Select vehicle"}
@@ -167,7 +172,7 @@ export default function LogForm({ driver }: LogFormProps) {
                         <CommandList>
                           <CommandEmpty>No vehicle found.</CommandEmpty>
                           <CommandGroup>
-                            {vehiclesPlateNumber.map((vehicle) => (
+                            {plate_numbers?.map((vehicle) => (
                               <CommandItem
                                 value={vehicle}
                                 key={vehicle}

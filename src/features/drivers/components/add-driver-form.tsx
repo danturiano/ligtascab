@@ -62,6 +62,9 @@ export default function DriverForm() {
             toast.success(response.message);
             form.reset();
           }
+          if (response?.error) {
+            toast.error(response.error);
+          }
         },
       });
     });

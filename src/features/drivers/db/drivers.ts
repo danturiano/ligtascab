@@ -1,10 +1,10 @@
 "use server";
 
 import { createClient } from "@/supabase/server";
-import { Driver } from "@/types/types";
+import { Driver, DriverType } from "@/types/types";
 import { cache } from "react";
 
-export const getDriver = async (id: string): Promise<Driver | null> => {
+export const getDriver = async (id: string): Promise<DriverType | null> => {
   const supabase = await createClient();
   const { data: driver, error } = await supabase
     .from("drivers")

@@ -14,6 +14,23 @@ export const DriverSchema = z.object({
 
 export type Driver = z.infer<typeof DriverSchema>;
 
+export type DriverType = {
+  first_name: string;
+  last_name: string;
+  license_expiry: Date;
+  license_number: string;
+  phone_number: string;
+  image?: string;
+  operator_id?: string;
+  status?: string;
+  address?: string;
+  city?: string;
+  post_code?: string;
+  date_of_birth?: Date;
+  hire_date?: Date;
+  id?: string;
+};
+
 export type Expiry = {
   id: number;
   source_table: string;

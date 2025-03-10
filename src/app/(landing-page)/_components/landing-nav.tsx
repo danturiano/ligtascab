@@ -13,7 +13,7 @@ import PopoverItem from "./popover-item";
 
 export default function Navigation() {
   return (
-    <header className="py-4 fixed top-0 w-full z-10 shadow-xs bg-background/95 md:py-6 md:flex">
+    <header className="py-4 fixed top-0 w-full z-10 shadow-xs bg-background/95 md:flex">
       <nav className="flex items-center justify-between container">
         <div className="flex items-center gap-8">
           <Link href="/">
@@ -150,12 +150,17 @@ export default function Navigation() {
         </div>
         <div className="hidden md:flex md:space-x-4">
           <Link href="/sign-up">
-            <Button variant="outline" className="rounded-lg">
+            <Button variant="ghost" className="rounded-lg cursor-pointer">
               Sign up
             </Button>
           </Link>
           <Link href="/sign-in">
-            <Button className="px-5 rounded-lg">Operator Login</Button>
+            <Button
+              className="px-5 rounded-lg cursor-pointer"
+              variant={"outline"}
+            >
+              Operator Login
+            </Button>
           </Link>
         </div>
         <div className="md:hidden">

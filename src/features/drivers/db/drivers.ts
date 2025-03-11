@@ -32,9 +32,14 @@ export const createDriver = async (newDriver: Driver): Promise<boolean> => {
   return true;
 };
 
-export async function deleteDriver(id: string) {
+export async function deleteDriver(ids: string | string[]) {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("drivers").delete().eq("id", id);
+  const idArray = Array.isArray(ids) ? ids : [ids];
+
+  const { data, error } = await supabase
+    .from("drivers")
+    .delete()
+    .in("id", idArray);
 
   if (error) {
     console.error(error);

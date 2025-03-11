@@ -2,12 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "@/lib/utils";
+import { Driver } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import dynamic from "next/dynamic";
-import { deleteDriver } from "../db/drivers";
-import { Driver } from "@/types/types";
 
 const ExpirySort = dynamic(() => import("./expiry-sort"), {
   loading: () => <div>loading</div>,
@@ -17,12 +17,32 @@ const GenerateQRCode = dynamic(() => import("@/components/generate-qr"), {
   loading: () => <div>loading</div>,
   ssr: false,
 });
-const OptionsColumn = dynamic(
-  () => import("@/components/options-column").then((mod) => mod.OptionsColumn),
-  { loading: () => <div>loading</div>, ssr: false }
-);
 
 export const columns: ColumnDef<Driver>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-0.5"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-0.5"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "status",
     header: ({ column }) => {
@@ -80,16 +100,5 @@ export const columns: ColumnDef<Driver>[] = [
     accessorKey: "qr_code",
     header: "QR Code",
     cell: ({ row }) => <GenerateQRCode id={row.original.id as string} />,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => (
-      <OptionsColumn
-        id={row.original.id as string}
-        deleteFn={deleteDriver}
-        type="drivers"
-      />
-    ),
   },
 ];

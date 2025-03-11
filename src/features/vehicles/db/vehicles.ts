@@ -22,9 +22,13 @@ export async function createVehicle(newVehicle: Vehicle) {
   }
 }
 
-export async function deleteVehicle(id: string) {
+export async function deleteVehicle(ids: string | string[]) {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("vehicles").delete().eq("id", id);
+  const idArray = Array.isArray(ids) ? ids : [ids];
+  const { data, error } = await supabase
+    .from("vehicles")
+    .delete()
+    .in("id", idArray);
 
   if (error) {
     console.error(error);

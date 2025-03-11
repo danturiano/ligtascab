@@ -11,7 +11,9 @@ export function AddVehicle({ children }: { children: React.ReactNode }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Add Vehicle</Button>
+        <Button variant="outline" className="h-8 text-xs">
+          Add Vehicle
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
 import React from "react";
+import { DeleteTasksDialog } from "./delete-task-dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -93,36 +94,47 @@ export function DataTable<TData, TValue>({
               onChange={(event) =>
                 table.getColumn(filter_by)?.setFilterValue(event.target.value)
               }
-              className="max-w-sm"
+              className="max-w-xs h-8 placeholder:text-xs"
             />
             {children}
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Filter <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-2">
+            {table.getFilteredSelectedRowModel().rows.length > 0 ? (
+              <DeleteTasksDialog
+                tasks={table
+                  .getFilteredSelectedRowModel()
+                  .rows.map((row) => row.original)}
+                onSuccess={() => table.toggleAllRowsSelected(false)}
+                filter={filter_by}
+              />
+            ) : null}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-auto h-8 text-xs">
+                  Filter <ChevronDown />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         <div className="rounded-md border overflow-x-auto max-w-full">
           <Table>
@@ -182,6 +194,7 @@ export function DataTable<TData, TValue>({
           <div className="space-x-2">
             <Button
               variant="outline"
+              className="h-8 text-xs"
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
@@ -190,6 +203,7 @@ export function DataTable<TData, TValue>({
             </Button>
             <Button
               variant="outline"
+              className="h-8 text-xs"
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}

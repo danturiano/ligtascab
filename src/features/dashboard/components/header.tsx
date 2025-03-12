@@ -1,12 +1,21 @@
 "use client";
 
-import BrandLogo from "@/components/brand-logo";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createClient } from "@/supabase/client";
-import { BookOpen, Car, FileClock, SquareTerminal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Car,
+  ChevronDown,
+  CirclePlus,
+  Table,
+  UserRoundPlus,
+} from "lucide-react";
 import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
-import ExpiryNotifications from "./expiry-notification";
+import { usePathname } from "next/navigation";
+import HeaderTop from "./header-top";
 
 const data = {
   navMain: [
@@ -14,32 +23,27 @@ const data = {
       title: "dashboard",
       url: "/dashboard",
       pathname: "/dashboard",
-      icon: SquareTerminal,
     },
     {
       title: "Driver Shift Logs",
       url: "/dashboard/driver-logs",
       pathname: "/driver-logs",
-      icon: FileClock,
     },
     {
-      title: "Triycles",
+      title: "Vehicles",
       url: "/dashboard/vehicles",
       pathname: "/vehicles",
       icon: Car,
-      isActive: true,
       items: [
         {
-          title: "Tricycles",
+          title: "View Vehicles",
           url: "/dashboard/vehicles",
+          icon: Table,
         },
         {
-          title: "Documents",
-          url: "#",
-        },
-        {
-          title: "Maintenance",
-          url: "#",
+          title: "Create A Vehicle",
+          url: "/dashboard/vehicles/create-vehicle",
+          icon: CirclePlus,
         },
       ],
     },
@@ -47,12 +51,16 @@ const data = {
       title: "Drivers",
       url: "/dashboard/drivers",
       pathname: "/drivers",
-      icon: BookOpen,
-      isActive: false,
       items: [
         {
-          title: "Drivers",
+          title: "View Drivers",
           url: "/dashboard/drivers",
+          icon: Table,
+        },
+        {
+          title: "Create A Driver",
+          url: "/dashboard/vehicles/create-vehicle",
+          icon: UserRoundPlus,
         },
       ],
     },
@@ -62,59 +70,18 @@ const data = {
 const AppHeader = () => {
   const pathname = usePathname();
   const path = pathname.substring(pathname.lastIndexOf("/"));
+
   return (
     <div className="sticky -top-16 z-20 border-b border-slate-200 bg-slate-50">
       <div className="mx-auto w-full max-w-screen-xl px-2.5 lg:px-20">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center">
-            <a className="hidden transition-all sm:block" href="/app">
-              <div className="flex max-w-fit items-center gap-2">
-                <BrandLogo />
-              </div>
-            </a>
-          </div>
-          <div className="flex items-center space-x-6">
-            <ExpiryNotifications />
-            <a
-              href="#"
-              className="hidden text-sm text-slate-500 transition-colors hover:text-slate-700 sm:block"
-              target="_blank"
-            >
-              Help
-            </a>
-            <button
-              onClick={() => {
-                const supabase = createClient();
-                supabase.auth.signOut();
-                redirect("/sign-in");
-              }}
-              className="hidden text-sm cursor-pointer text-slate-500 transition-colors hover:text-slate-700 sm:block"
-            >
-              Sign Out
-            </button>
-            <Link href="/settings" className="relative inline-block pt-1.5">
-              <button className="group relative sm:inline-flex" type="button">
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage
-                  // src={user.image ?? undefined}
-                  // alt={user.first_name ?? undefined}
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    <div className="size-10"></div>
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-white bg-blue-500"></div>
-              </button>
-            </Link>
-          </div>
-        </div>
+        <HeaderTop />
         <div className="flex items-center justify-between">
           <div className="scrollbar-hide relative flex gap-x-2 overflow-x-auto transition-all w-full">
             {data.navMain.map((item) => {
               const title =
                 item.title.charAt(0).toUpperCase() + item.title.slice(1);
               return (
-                <Link key={item.title} href={item.url} className="relative">
+                <div key={item.title} className="relative">
                   {path.startsWith(item.pathname) && (
                     <div
                       className="absolute bottom-0 w-full px-3"
@@ -133,23 +100,58 @@ const AppHeader = () => {
                         : "hover:bg-slate-100 active:bg-slate-200"
                     } group`}
                   >
-                    <p
-                      className={`text-sm ${
-                        path.startsWith(item.pathname)
-                          ? "text-black"
-                          : "text-slate-600 hover:text-black group-hover:text-black"
-                      }`}
-                    >
-                      {title}
-                    </p>
+                    {item.items ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="flex gap-2 items-center cursor-pointer">
+                          <p
+                            className={`text-sm ${
+                              path.startsWith(item.pathname)
+                                ? "text-black"
+                                : "text-slate-600 hover:text-black group-hover:text-black"
+                            }`}
+                          >
+                            {title}
+                          </p>
+                          <ChevronDown size={16} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="shadow-none rounded-none bg-gray-50 pr-2">
+                          {item.items.map((link) => (
+                            <DropdownMenuItem
+                              key={link.title}
+                              asChild
+                              className="cursor-pointer"
+                            >
+                              <Link
+                                href={link.url}
+                                className="flex items-center gap-2"
+                              >
+                                {<link.icon size={16} color="#101828" />}
+                                <p className="text-xs text-gray-900">
+                                  {link.title}
+                                </p>
+                              </Link>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <Link href={item.url} className="cursor-pointer">
+                        <p
+                          className={`text-sm ${
+                            path.startsWith(item.pathname)
+                              ? "text-black"
+                              : "text-slate-600 hover:text-black group-hover:text-black"
+                          }`}
+                        >
+                          {title}
+                        </p>
+                      </Link>
+                    )}
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
-          {/* <div className="flex items-center space-x-2">
-            <Bell />
-          </div> */}
         </div>
       </div>
     </div>

@@ -1,9 +1,11 @@
 "use server";
 
+import { createClient } from "@/supabase/server";
+import { v4 as uuidv4 } from "uuid";
 import { updateUser } from "../db/setup";
-import { ProfileSchema } from "../schemas/setup";
+import { AddressSchema, ProfileSchema } from "../schemas/setup";
 
-export async function updateProfile(User: unknown) {
+export async function updateUserInformation(User: unknown) {
   const result = ProfileSchema.safeParse(User);
 
   if (!result.success) {
@@ -18,53 +20,86 @@ export async function updateProfile(User: unknown) {
     };
   }
 
-  const userProfile = {
+  const userInformation = {
     first_name: result.data.first_name,
     last_name: result.data.last_name,
     email: result.data.email,
     subscribe_to_newsletter: result.data.subscribe,
-    is_new_user: false,
   };
 
-  await updateUser(userProfile);
+  await updateUser(userInformation);
 
   if (result.success) {
     return { message: "Success!" };
   }
 }
 
-// type UploadProps = {
-// 	file: File;
-// 	bucket: string;
-// 	folder?: string;
-// };
+export async function updateUserAddress(User: unknown) {
+  const result = AddressSchema.safeParse(User);
 
-// export const uploadImage = async ({ file, bucket, folder }: UploadProps) => {
-// 	const fileName = file.name;
-// 	const fileExtension = fileName.slice(fileName.lastIndexOf('.') + 1);
-// 	const path = `${folder ? folder + '/' : ''}${uuidv4()}.${fileExtension}`;
+  if (!result.success) {
+    let errorMessage = "";
 
-// 	try {
-// 		file = await imageCompression(file, {
-// 			maxSizeMB: 1,
-// 		});
-// 	} catch (error) {
-// 		console.error(error);
-// 		return { imageUrl: '', error: 'Image compression failed' };
-// 	}
+    result.error.issues.forEach((issue) => {
+      errorMessage = errorMessage + issue.path[0] + ": " + issue.message + ". ";
+    });
 
-// 	const { data, error } = await supabase.storage
-// 		.from(bucket)
-// 		.upload(path, file);
+    return {
+      error: errorMessage,
+    };
+  }
 
-// 	if (error) {
-// 		return { imageUrl: '', error: 'Image upload failed' };
-// 	}
+  const userAddress = {
+    street: result.data.street,
+    barangay: result.data.barangay,
+    city: result.data.city,
+    postal_code: result.data.postal_code,
+  };
 
-// 	const imageUrl = `${process.env
-// 		.NEXT_PUBLIC_SUPABASE_URL!}/storage/v1/object/public/${bucket}/${
-// 		data?.path
-// 	}`;
+  await updateUser(userAddress);
 
-// 	return { imageUrl, error: '' };
-// };
+  if (result.success) {
+    return { message: "Success!" };
+  }
+}
+
+type UploadProps = {
+  file: File;
+  bucket: string;
+  documentId: string;
+};
+
+export const uploadImage = async ({
+  file,
+  bucket,
+  documentId,
+}: UploadProps) => {
+  const fileName = file.name;
+  const fileExtension = fileName.slice(fileName.lastIndexOf(".") + 1);
+
+  // Create a filename that identifies the document type
+  // Format: documentType_uniqueId.extension
+  const uniqueFilename = `${documentId}_${uuidv4()}.${fileExtension}`;
+
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Path is now just userId/filename
+  const path = `${user?.id}/${uniqueFilename}`;
+
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .upload(path, file);
+
+  if (error) {
+    console.error("Upload error:", error);
+    return { imageUrl: "", error: `Upload failed: ${error.message}` };
+  }
+
+  // Construct the public URL
+  const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data?.path}`;
+  return { imageUrl, error: "", filename: uniqueFilename };
+};

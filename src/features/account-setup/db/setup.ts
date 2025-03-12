@@ -1,15 +1,21 @@
 import { createClient } from "@/supabase/server";
 
-type UserUpdate = {
+type UserInformation = {
   first_name: string;
   last_name: string;
   email: string;
   subscribe_to_newsletter: boolean;
-  is_new_user: boolean;
   image?: string;
 };
 
-export async function updateUser(userUpdate: UserUpdate) {
+type UserAddress = {
+  street: string;
+  barangay: string;
+  city: string;
+  postal_code: string;
+};
+
+export async function updateUser(userUpdate: UserInformation | UserAddress) {
   const supabase = await createClient();
   const {
     data: { user },

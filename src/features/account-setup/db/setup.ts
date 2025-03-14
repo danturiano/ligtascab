@@ -15,7 +15,13 @@ type UserAddress = {
   postal_code: string;
 };
 
-export async function updateUser(userUpdate: UserInformation | UserAddress) {
+type UserIsNew = {
+  is_new_user: boolean;
+};
+
+export async function updateUser(
+  userUpdate: UserInformation | UserAddress | UserIsNew
+) {
   const supabase = await createClient();
   const {
     data: { user },

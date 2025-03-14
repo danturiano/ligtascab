@@ -2,9 +2,10 @@
 
 import SpinnerMini from "@/components/spinner-mini";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { uploadImage } from "../actions/setup";
+import { updateUserNew, uploadImage } from "../actions/setup";
 import DocumentCard from "./document-card";
 
 const DOCUMENT_TYPES: DocumentType[] = [
@@ -31,7 +32,6 @@ interface DocumentType {
 
 interface MultiDocumentUploadProps {
   bucketName: string;
-  onComplete?: (uploadedDocs: UploadedDocument[]) => void;
 }
 
 interface DocumentWithFile {
@@ -46,15 +46,11 @@ interface UploadedDocument {
   filename: string | undefined;
 }
 
-export function MultiDocumentUpload({
-  bucketName,
-  onComplete,
-}: MultiDocumentUploadProps) {
+export function MultiDocumentUpload({ bucketName }: MultiDocumentUploadProps) {
   const [selectedFiles, setSelectedFiles] = useState<{
     [key: string]: File | null;
   }>({});
   const [uploading, setUploading] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDocument[]>([]);
 
   // Handle file selection for a specific document type
@@ -128,11 +124,30 @@ export function MultiDocumentUpload({
       setUploadedDocs(uploadResults);
 
       if (uploadResults.length === documentsToUpload.length) {
-        toast.success("All documents uploaded successfully");
+        // Check if all required document types have been uploaded
+        const allRequiredUploaded = DOCUMENT_TYPES.filter(
+          (docType) => docType.required
+        ).every((docType) =>
+          uploadResults.some((result) => result.documentId === docType.id)
+        );
 
-        // Call the completion callback if provided
-        if (onComplete) {
-          onComplete(uploadResults);
+        if (allRequiredUploaded) {
+          try {
+            // Update user status to not new user
+            const data = await updateUserNew({ is_new_user: false });
+            if (data) {
+              toast.success("Setup completed successfully!");
+              // Redirect to dashboard
+              redirect("/dashboard");
+            } else {
+              toast.error("Failed to update user status");
+            }
+          } catch (error) {
+            console.error("Error updating user status:", error);
+            toast.error("Failed to complete setup");
+          }
+        } else {
+          toast.warning("Some required documents are missing");
         }
       } else {
         toast.warning("Some documents failed to upload");

@@ -5,6 +5,12 @@ import { v4 as uuidv4 } from "uuid";
 import { updateUser } from "../db/setup";
 import { AddressSchema, ProfileSchema } from "../schemas/setup";
 
+type UploadProps = {
+  file: File;
+  bucket: string;
+  documentId: string;
+};
+
 export async function updateUserInformation(User: unknown) {
   const result = ProfileSchema.safeParse(User);
 
@@ -63,12 +69,6 @@ export async function updateUserAddress(User: unknown) {
   }
 }
 
-type UploadProps = {
-  file: File;
-  bucket: string;
-  documentId: string;
-};
-
 export const uploadImage = async ({
   file,
   bucket,
@@ -77,8 +77,6 @@ export const uploadImage = async ({
   const fileName = file.name;
   const fileExtension = fileName.slice(fileName.lastIndexOf(".") + 1);
 
-  // Create a filename that identifies the document type
-  // Format: documentType_uniqueId.extension
   const uniqueFilename = `${documentId}_${uuidv4()}.${fileExtension}`;
 
   const supabase = await createClient();
@@ -87,7 +85,6 @@ export const uploadImage = async ({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Path is now just userId/filename
   const path = `${user?.id}/${uniqueFilename}`;
 
   const { data, error } = await supabase.storage
@@ -99,7 +96,6 @@ export const uploadImage = async ({
     return { imageUrl: "", error: `Upload failed: ${error.message}` };
   }
 
-  // Construct the public URL
   const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data?.path}`;
   return { imageUrl, error: "", filename: uniqueFilename };
 };
